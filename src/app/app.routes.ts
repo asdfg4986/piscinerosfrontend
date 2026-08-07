@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { Clientes } from './clientes/clientes'; 
 import { NuevoCliente } from './nuevo-cliente/nuevo-cliente';
+import { EditarCliente } from './editar-cliente/editar-cliente';
 
 export const routes: Routes = [
   // Cuando la URL sea /clientes, muestra el componente
@@ -8,6 +9,9 @@ export const routes: Routes = [
 
   // Ruta para crear un nuevo cliente
   { path: 'clientes/nuevo', component: NuevoCliente },
+
+  // Ruta para editar un cliente existente
+  { path: 'clientes/editar/:id', component: EditarCliente },
   
   // Si el usuario entra a la raíz (/), envíalo automáticamente a /clientes
   { path: '', redirectTo: 'clientes', pathMatch: 'full' }

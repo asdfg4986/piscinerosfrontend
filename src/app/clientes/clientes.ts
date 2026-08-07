@@ -64,4 +64,8 @@ export class Clientes implements OnInit {
       }
     });
   }
+
+  editar(id: number) {
+    this.router.navigate(['/clientes/editar', id]);
+  }
 }

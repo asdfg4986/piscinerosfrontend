@@ -11,7 +11,7 @@
         <th>Nombre</th>
         <th>Dirección</th>
         <th>Comuna</th>
-        <th>Acciones</th>
+        <th style="width: 1%; white-space: nowrap;">Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -21,7 +21,10 @@
           <td>{{ cliente.nombre }}</td>
           <td>{{ cliente.direccion }}</td>
           <td>{{ cliente.comuna }}</td>
-          <td>
+          <td style="white-space: nowrap;">
+            <button class="btn btn-sm btn-warning me-2" (click)="editar(cliente.id)">
+              Editar
+            </button>
             <button class="btn btn-sm btn-danger" (click)="eliminar(cliente.id, cliente.nombre)">
               Eliminar
             </button>
