@@ -11,6 +11,7 @@
         <th>Nombre</th>
         <th>Dirección</th>
         <th>Comuna</th>
+        <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -20,10 +21,15 @@
           <td>{{ cliente.nombre }}</td>
           <td>{{ cliente.direccion }}</td>
           <td>{{ cliente.comuna }}</td>
+          <td>
+            <button class="btn btn-sm btn-danger" (click)="eliminar(cliente.id, cliente.nombre)">
+              Eliminar
+            </button>
+          </td>
         </tr>
       } @empty {
         <tr>
-          <td colspan="4" class="text-center text-muted">Cargando clientes o sin datos...</td>
+          <td colspan="5" class="text-center text-muted">Cargando clientes o sin datos...</td>
         </tr>
       }
     </tbody>
