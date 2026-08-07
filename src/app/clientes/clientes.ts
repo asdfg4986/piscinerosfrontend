@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { ClienteService } from '../services/cliente';
 
 @Component({
@@ -13,7 +14,8 @@ export class Clientes implements OnInit {
 
   constructor(
     private clienteService: ClienteService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -26,5 +28,9 @@ export class Clientes implements OnInit {
         console.error('Error al conectar con la API:', err);
       }
     });
+  }
+
+  irANuevoCliente() {
+    this.router.navigate(['/clientes/nuevo']);
   }
 }

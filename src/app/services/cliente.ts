@@ -14,4 +14,8 @@ export class ClienteService {
   getClientes(): Observable<any> {
     return this.http.get(this.apiUrl);
   }
+
+  crearCliente(nuevoCliente: any): Observable<any> {
+    return this.http.post(this.apiUrl, nuevoCliente);
+  }
 }
