@@ -1,0 +1,46 @@
+<div>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <!-- Botón para regresar a la lista de clientes -->
+      <button class="btn btn-outline-secondary btn-sm mb-2" (click)="volver()">
+        &larr; Volver a Clientes
+      </button>
+      <h3>Historial de Mantenimientos</h3>
+    </div>
+    <button class="btn btn-info text-white" (click)="irANuevaVisita()">+ Registrar Visita</button>
+  </div>
+  
+  <table class="table table-bordered table-hover mt-3">
+    <thead class="table-info">
+      <tr>
+        <th>Id</th>
+        <th>Fecha y Hora</th>
+        <th>Técnico</th>
+        <th>Estado</th>
+        <th>Observaciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (visita of visitas; track visita.id) {
+        <tr>
+          <!-- Usamos el pipe 'date' nativo de Angular para formatear la fecha -->
+          <td>{{ visita.id }}</td>
+          <td>{{ visita.fechaVisita | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ visita.tecnico?.nombre }}</td>
+          <td>
+            <span class="badge {{ getEstadoInfo(visita.estado).clase }}">
+              {{ getEstadoInfo(visita.estado).texto }}
+            </span>
+          </td>
+          <td>{{ visita.observaciones }}</td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="text-center text-muted p-4">
+            No hay registros de mantenimiento para este cliente.
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

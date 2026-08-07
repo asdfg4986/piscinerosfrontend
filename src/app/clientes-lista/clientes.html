@@ -22,6 +22,9 @@
           <td>{{ cliente.direccion }}</td>
           <td>{{ cliente.comuna }}</td>
           <td style="white-space: nowrap;">
+            <button class="btn btn-sm btn-info me-2" (click)="verVisitas(cliente.id)">
+              Visitas
+            </button>
             <button class="btn btn-sm btn-warning me-2" (click)="editar(cliente.id)">
               Editar
             </button>

@@ -68,4 +68,8 @@ export class Clientes implements OnInit {
   editar(id: number) {
     this.router.navigate(['/clientes/editar', id]);
   }
+
+  verVisitas(id: number) {
+    this.router.navigate(['/clientes', id, 'visitas']);
+  }
 }
