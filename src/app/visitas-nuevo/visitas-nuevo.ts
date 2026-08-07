@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VisitaService } from '../services/visita';
@@ -22,7 +22,8 @@ export class VisitasNuevo implements OnInit {
     private visitaService: VisitaService,
     private tecnicoService: TecnicoService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     // Configuramos el formulario con las validaciones básicas
     this.formulario = this.fb.group({
@@ -42,6 +43,7 @@ export class VisitasNuevo implements OnInit {
     this.tecnicoService.getTecnicos().subscribe({
       next: (datos) => {
         this.tecnicos = datos;
+        this.cdr.detectChanges(); // Forzamos la actualización de la vista
       },
       error: (err) => console.error('Error al cargar técnicos:', err)
     });

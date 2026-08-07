@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VisitaService } from '../services/visita';
@@ -32,7 +32,8 @@ export class VisitasEditar implements OnInit {
     private visitaService: VisitaService,
     private tecnicoService: TecnicoService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     this.formulario = this.fb.group({
       tecnicoId: ['', Validators.required],
@@ -51,7 +52,10 @@ export class VisitasEditar implements OnInit {
 
   cargarTecnicos() {
     this.tecnicoService.getTecnicos().subscribe({
-      next: (datos) => this.tecnicos = datos,
+      next: (datos) => {
+        this.tecnicos = datos;
+        this.cdr.detectChanges(); // Forzamos la actualización de la vista
+      },
       error: (err) => console.error('Error al cargar técnicos:', err)
     });
   }
@@ -65,6 +69,7 @@ export class VisitasEditar implements OnInit {
           estado: datos.estado,
           observaciones: datos.observaciones
         });
+        this.cdr.detectChanges(); // Forzamos la actualización de la vista
       },
       error: (err) => console.error('Error al cargar la visita:', err)
     });
