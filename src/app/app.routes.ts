@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { Clientes } from './clientes/clientes'; 
-import { NuevoCliente } from './nuevo-cliente/nuevo-cliente';
-import { EditarCliente } from './editar-cliente/editar-cliente';
+import { Clientes } from './clientes-lista/clientes'; 
+import { NuevoCliente } from './clientes-nuevo/nuevo-cliente';
+import { EditarCliente } from './clientes-editar/editar-cliente';
 
 export const routes: Routes = [
   // Cuando la URL sea /clientes, muestra el componente
