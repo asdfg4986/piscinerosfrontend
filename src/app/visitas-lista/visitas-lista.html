@@ -18,6 +18,7 @@
         <th>Técnico</th>
         <th>Estado</th>
         <th>Observaciones</th>
+        <th style="width: 1%; white-space: nowrap;">Acciones</th>
       </tr>
     </thead>
     <tbody>
@@ -33,10 +34,18 @@
             </span>
           </td>
           <td>{{ visita.observaciones }}</td>
+          <td style="white-space: nowrap;">
+            <button class="btn btn-sm btn-warning me-2" (click)="editarVisita(visita.id)">
+              Actualizar
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="eliminarVisita(visita.id)">
+              Eliminar
+            </button>
+          </td>
         </tr>
       } @empty {
         <tr>
-          <td colspan="5" class="text-center text-muted p-4">
+          <td colspan="6" class="text-center text-muted p-4">
             No hay registros de mantenimiento para este cliente.
           </td>
         </tr>

@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VisitaService } from '../services/visita';
 import { DatePipe } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-visitas-lista',
@@ -45,7 +46,37 @@ export class VisitasLista implements OnInit {
     this.router.navigate(['/clientes', this.clienteId, 'visitas', 'nuevo']);
   }
 
-  // Función para traducir el número del estado a texto y color
+  editarVisita(visitaId: number) {
+    this.router.navigate(['/clientes', this.clienteId, 'visitas', 'editar', visitaId]);
+  }
+
+  eliminarVisita(id: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Se borrará este registro de mantenimiento. Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545', // Rojo para confirmar el peligro
+      cancelButtonColor: '#6c757d', // Gris para cancelar
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.visitaService.eliminarVisita(id).subscribe({
+          next: () => {
+            Swal.fire('¡Eliminada!', 'La visita ha sido borrada.', 'success');
+            // Recargamos la lista silenciosamente para que el registro desaparezca de la tabla
+            this.cargarVisitas();
+          },
+          error: (err) => {
+            console.error('Error al eliminar:', err);
+            Swal.fire('Error', 'No se pudo eliminar la visita', 'error');
+          }
+        });
+      }
+    });
+  }
+
   // Función para traducir el Enum de C# a texto y color de Bootstrap
   getEstadoInfo(estado: number): { texto: string, clase: string } {
     switch (estado) {

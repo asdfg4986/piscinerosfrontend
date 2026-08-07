@@ -4,6 +4,7 @@ import { NuevoCliente } from './clientes-nuevo/nuevo-cliente';
 import { EditarCliente } from './clientes-editar/editar-cliente';
 import { VisitasLista } from './visitas-lista/visitas-lista';
 import { VisitasNuevo } from './visitas-nuevo/visitas-nuevo';
+import { VisitasEditar } from './visitas-editar/visitas-editar';
 
 export const routes: Routes = [
   // Cuando la URL sea /clientes, muestra el componente
@@ -20,6 +21,9 @@ export const routes: Routes = [
 
   // Ruta para registrar una nueva visita para un cliente específico
   { path: 'clientes/:id/visitas/nuevo', component: VisitasNuevo },
+
+  // Ruta para editar una visita existente
+  { path: 'clientes/:clienteId/visitas/editar/:id', component: VisitasEditar },
   
   // Si el usuario entra a la raíz (/), envíalo automáticamente a /clientes
   { path: '', redirectTo: 'clientes', pathMatch: 'full' }
