@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClienteService } from '../services/cliente';
+import { ConfiguracionService } from '../services/configuracion';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -14,12 +15,15 @@ import Swal from 'sweetalert2';
 export class EditarCliente implements OnInit {
   formulario: FormGroup;
   clienteId!: number;
+  configuracionService = inject(ConfiguracionService);
+  comunas: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private clienteService: ClienteService,
     private router: Router,
-    private route: ActivatedRoute // Herramienta para leer la URL
+    private route: ActivatedRoute, // Herramienta para leer la URL
+    private cdr: ChangeDetectorRef
   ) {
     this.formulario = this.fb.group({
       nombre: ['', Validators.required],
@@ -41,8 +45,19 @@ export class EditarCliente implements OnInit {
           direccion: datos.direccion,
           comuna: datos.comuna
         });
+        this.cargarComunas(); // Cargar comunas después de obtener los datos del cliente
       },
       error: (err) => console.error('Error al cargar cliente:', err)
+    });
+  }
+
+  cargarComunas() {
+    this.configuracionService.getComunas().subscribe({
+      next: (datos) => {
+        this.comunas = datos;
+        this.cdr.detectChanges(); // Forzamos la detección de cambios
+      },
+      error: (err) => console.error('Error al cargar comunas:', err)
     });
   }
 

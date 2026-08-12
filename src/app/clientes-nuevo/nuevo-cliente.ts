@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ClienteService } from '../services/cliente';
+import { ConfiguracionService } from '../services/configuracion';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -11,19 +12,36 @@ import Swal from 'sweetalert2';
   templateUrl: './nuevo-cliente.html',
   styleUrl: './nuevo-cliente.scss'
 })
-export class NuevoCliente {
+export class NuevoCliente implements OnInit {
   formulario: FormGroup;
+  configuracionService = inject(ConfiguracionService);
+  comunas: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private clienteService: ClienteService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     // Configuramos los campos y validaciones
     this.formulario = this.fb.group({
       nombre: ['', Validators.required],
       direccion: ['', Validators.required],
       comuna: ['', Validators.required] 
+    });
+  }
+
+  ngOnInit(): void {
+    this.cargarComunas(); // Llamamos a la función para cargar comunas al iniciar
+  }
+
+  cargarComunas() {
+    this.configuracionService.getComunas().subscribe({
+      next: (datos) => {
+        this.comunas = datos;
+        this.cdr.detectChanges(); // Forzamos la detección de cambios
+      },
+      error: (err) => console.error('Error al cargar comunas:', err)
     });
   }
 
