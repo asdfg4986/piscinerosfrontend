@@ -38,8 +38,29 @@ export class AuthService {
 
   // 4. Saber si el usuario tiene un token activo
   estaAutenticado(): boolean {
-    // Retorna true si hay token, false si es null
-    return this.obtenerToken() !== null; 
+    const token = this.obtenerToken();
+    if (!token) return false;
+  
+    try {
+      // Un JWT tiene 3 partes separadas por puntos. La del medio (payload) tiene los datos.
+      // atob() decodifica la parte en Base64 para poder leerla.
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      
+      // El claim 'exp' viene en segundos, lo multiplicamos por 1000 para pasarlo a milisegundos
+      const fechaExpiracion = payload.exp * 1000; 
+      
+      // Si la fecha actual es mayor a la fecha de expiración, el token está vencido
+      if (Date.now() > fechaExpiracion) {
+        this.logout(); // Destruimos la evidencia inmediatamente
+        return false;
+      }
+    
+      return true; // Si llegamos aquí, el token existe y aún es válido
+    } catch (e) {
+      // Si hay algún error leyendo el token (ej. está corrupto), cerramos sesión
+      this.logout();
+      return false;
+    }
   }
   
   // 5. Saber si el usuario es Administrador

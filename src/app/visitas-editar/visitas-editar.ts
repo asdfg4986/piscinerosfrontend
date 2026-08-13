@@ -77,7 +77,7 @@ export class VisitasEditar implements OnInit {
 
   actualizar() {
     if (this.formulario.valid) {
-      // Recuerda el truco que aprendimos: C# requiere el ID en el cuerpo de la petición PUT
+      // C# requiere el ID en el cuerpo de la petición PUT
       const visitaActualizada = {
         id: this.visitaId,
         clienteId: this.clienteId,
