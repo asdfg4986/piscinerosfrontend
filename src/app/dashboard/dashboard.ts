@@ -64,8 +64,10 @@ export class Dashboard implements OnInit {
         error: (err) => console.error('Error cargando todas las visitas', err)
       });
     } else {
-      // Si es un técnico, simularemos que es el ID 1 por ahora, hasta que exista el vínculo en base de datos.
-      const tecnicoId = 1; 
+      // Obtenemos el ID del técnico desde el token
+      const tecnicoId = this.authService.obtenerTecnicoId(); 
+      if (!tecnicoId) return; // Si no hay ID, no cargamos nada
+
       // Calculamos la fecha actual en YYYY-MM-DD
       const hoy = new Date();
       const year = hoy.getFullYear();

@@ -69,4 +69,21 @@ export class AuthService {
     if (!roles) return false;
     return JSON.parse(roles).includes('Administrador');
   }
+
+  // 6. Obtener el ID del técnico desde el token
+  obtenerTecnicoId(): number | null {
+    const token = this.obtenerToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      // The claim name is "TecnicoId" as we defined in the backend
+      if (payload.TecnicoId) {
+        return Number(payload.TecnicoId);
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
 }

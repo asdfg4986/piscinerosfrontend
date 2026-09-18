@@ -16,7 +16,7 @@ export class VisitasAgendaTecnico implements OnInit {
   authService = inject(AuthService);
   router = inject(Router);
   cdr = inject(ChangeDetectorRef);
-  tecnicoId = 1; // ID del técnico actual
+  tecnicoId: number | null = null;
   visitas: any[] = [];
   cargando = false;
   esAdmin = false;
@@ -26,6 +26,9 @@ export class VisitasAgendaTecnico implements OnInit {
   
   ngOnInit() {
     this.esAdmin = this.authService.esAdministrador();
+    if (!this.esAdmin) {
+      this.tecnicoId = this.authService.obtenerTecnicoId();
+    }
     // Inicializamos con la fecha de hoy
     this.fechaSeleccionada = this.obtenerFechaIso(new Date());
     this.cargarVisitas();
@@ -67,7 +70,9 @@ export class VisitasAgendaTecnico implements OnInit {
         }
       });
     } else {
-      // Si es un técnico, simulamos ID 1 por ahora y obtenemos solo las suyas
+      // Si es un técnico, obtenemos solo las suyas
+      if (!this.tecnicoId) return;
+      
       this.visitaService.getVisitasPorFecha(this.tecnicoId, this.fechaSeleccionada).subscribe({
         next: (data) => {
           console.log('Visitas del técnico:', data);

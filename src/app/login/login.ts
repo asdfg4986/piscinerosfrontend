@@ -37,7 +37,7 @@ export class LoginComponent {
       next: () => {
         // Si C# nos da el OK y nos entrega el token, vamos al panel principal
         this.cargando = false;
-        this.router.navigate(['/clientes']);
+        this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         this.cargando = false;
