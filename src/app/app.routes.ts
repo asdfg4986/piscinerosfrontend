@@ -13,6 +13,7 @@ import { VisitasAgendaTecnico } from './visitas-agenda-tecnico/visitas-agenda-te
 import { VisitasAgendaEjecucion } from './visitas-agenda-ejecucion/visitas-agenda-ejecucion';
 import { VisitasAgendaDetalle } from './visitas-agenda-detalle/visitas-agenda-detalle';
 import { Dashboard } from './dashboard/dashboard';
+import { TecnicosNuevo } from './tecnicos-nuevo/tecnicos-nuevo';
 
 export const routes: Routes = [
   // Dashboard
@@ -23,6 +24,9 @@ export const routes: Routes = [
 
   // Ruta para crear un nuevo cliente
   { path: 'clientes/nuevo', component: NuevoCliente, canActivate: [authGuard] },
+
+  // Ruta para crear un nuevo tecnico
+  { path: 'tecnicos/nuevo', component: TecnicosNuevo, canActivate: [authGuard] },
 
   // Ruta para editar un cliente existente
   { path: 'clientes/editar/:id', component: EditarCliente, canActivate: [authGuard] },

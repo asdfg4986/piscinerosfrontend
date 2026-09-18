@@ -13,4 +13,9 @@ export class TecnicoService {
   getTecnicos(): Observable<any> {
     return this.http.get(this.apiUrl);
   }
+
+  // Crear un nuevo técnico (y su cuenta de usuario)
+  crearTecnico(tecnico: any): Observable<any> {
+    return this.http.post(this.apiUrl, tecnico);
+  }
 }

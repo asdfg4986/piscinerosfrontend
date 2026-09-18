@@ -82,23 +82,28 @@
     </div>
 
     <!-- Quick Actions -->
-    <div class="col-md-4 mb-4" *ngIf="esAdmin">
+    <div class="col-md-4 mb-4">
       <div class="card shadow-sm h-100">
         <div class="card-header bg-white py-3">
           <h5 class="mb-0 fw-bold">Acciones Rápidas</h5>
         </div>
         <div class="card-body d-flex flex-column gap-3">
-          <a routerLink="/clientes/nuevo" class="btn btn-primary d-flex align-items-center justify-content-center p-3 text-start">
+          <a *ngIf="esAdmin" routerLink="/clientes/nuevo" class="btn btn-primary d-flex align-items-center justify-content-center p-3 text-start">
             <div class="w-100 text-center fw-bold">
               + Nuevo Cliente
             </div>
           </a>
-          <a routerLink="/agenda" class="btn btn-outline-primary d-flex align-items-center justify-content-center p-3 text-start">
+          <a *ngIf="esAdmin" routerLink="/tecnicos/nuevo" class="btn btn-info text-white d-flex align-items-center justify-content-center p-3 text-start">
             <div class="w-100 text-center fw-bold">
-              📅 Ver Agenda Completa
+              + Nuevo Técnico
             </div>
           </a>
-          <a routerLink="/clientes" class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-3 text-start mt-auto">
+          <a routerLink="/agenda" class="btn btn-outline-primary d-flex align-items-center justify-content-center p-3 text-start" [ngClass]="{'mt-auto': !esAdmin}">
+            <div class="w-100 text-center fw-bold">
+              📅 {{ esAdmin ? 'Ver Agenda Completa' : 'Ver Mi Agenda en Terreno' }}
+            </div>
+          </a>
+          <a *ngIf="esAdmin" routerLink="/clientes" class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-3 text-start mt-auto">
             <div class="w-100 text-center fw-bold">
               👥 Ver Directorio de Clientes
             </div>
