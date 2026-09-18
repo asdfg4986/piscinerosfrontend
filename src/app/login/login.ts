@@ -21,7 +21,7 @@ export class LoginComponent {
   ) {
     // Creamos el formulario con validaciones básicas
     this.formulario = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required]],
       password: ['', Validators.required]
     });
   }
@@ -33,7 +33,15 @@ export class LoginComponent {
 
     this.cargando = true;
 
-    this.authService.login(this.formulario.value).subscribe({
+    // Clonar los datos del formulario para modificarlos antes de enviar
+    const credenciales = { ...this.formulario.value };
+    
+    // Si el usuario no escribió un '@', le agregamos el dominio por defecto
+    if (!credenciales.email.includes('@')) {
+      credenciales.email += '@piscineros.cl';
+    }
+
+    this.authService.login(credenciales).subscribe({
       next: () => {
         // Si C# nos da el OK y nos entrega el token, vamos al panel principal
         this.cargando = false;
