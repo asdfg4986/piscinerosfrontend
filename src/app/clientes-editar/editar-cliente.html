@@ -29,6 +29,11 @@
         </select>
       </div>
 
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="activoCheck" formControlName="activo">
+        <label class="form-check-label" for="activoCheck">Cliente Activo</label>
+      </div>
+
       <div class="d-flex justify-content-end gap-2 mt-4">
         <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
         <button type="submit" class="btn btn-warning" [disabled]="formulario.invalid">Actualizar Cliente</button>

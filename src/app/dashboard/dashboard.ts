@@ -43,7 +43,7 @@ export class Dashboard implements OnInit {
     if (this.esAdmin) {
       this.clienteService.getClientes().subscribe({
         next: (clientes) => {
-          this.totalClientes = clientes?.length || 0;
+          this.totalClientes = clientes?.filter((c: any) => c.activo).length || 0;
           this.cdr.detectChanges();
         },
         error: (err) => console.error('Error cargando clientes', err)
@@ -51,7 +51,7 @@ export class Dashboard implements OnInit {
 
       this.tecnicoService.getTecnicos().subscribe({
         next: (tecnicos) => {
-          this.tecnicosActivos = tecnicos?.length || 0;
+          this.tecnicosActivos = tecnicos?.filter((t: any) => t.activo).length || 0;
           this.cdr.detectChanges();
         },
         error: (err) => console.error('Error cargando técnicos', err)

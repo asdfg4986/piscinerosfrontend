@@ -11,6 +11,7 @@
         <th>Nombre</th>
         <th>Dirección</th>
         <th>Comuna</th>
+        <th>Estado</th>
         <th style="width: 1%; white-space: nowrap;">Acciones</th>
       </tr>
     </thead>
@@ -21,6 +22,11 @@
           <td>{{ cliente.nombre }}</td>
           <td>{{ cliente.direccion }}</td>
           <td>{{ cliente.comuna }}</td>
+          <td>
+            <span class="badge" [ngClass]="cliente.activo ? 'bg-success' : 'bg-danger'">
+              {{ cliente.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
           <td style="white-space: nowrap;">
             <button class="btn btn-sm btn-info me-2" (click)="verVisitas(cliente.id)">
               Visitas

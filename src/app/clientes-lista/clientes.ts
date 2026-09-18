@@ -31,7 +31,11 @@ export class Clientes implements OnInit {
   cargarClientes() {
     this.clienteService.getClientes().subscribe({
       next: (datos) => {
-        this.clientes = datos;
+        if (this.esAdmin) {
+          this.clientes = datos;
+        } else {
+          this.clientes = datos.filter((c: any) => c.activo === true);
+        }
         this.cdr.detectChanges(); 
       },
       error: (err) => console.error('Error:', err)

@@ -28,7 +28,8 @@ export class EditarCliente implements OnInit {
     this.formulario = this.fb.group({
       nombre: ['', Validators.required],
       direccion: ['', Validators.required],
-      comuna: ['', Validators.required]
+      comuna: ['', Validators.required],
+      activo: [true]
     });
   }
 
@@ -43,7 +44,8 @@ export class EditarCliente implements OnInit {
         this.formulario.patchValue({
           nombre: datos.nombre,
           direccion: datos.direccion,
-          comuna: datos.comuna
+          comuna: datos.comuna,
+          activo: datos.activo
         });
         this.cargarComunas(); // Cargar comunas después de obtener los datos del cliente
       },
