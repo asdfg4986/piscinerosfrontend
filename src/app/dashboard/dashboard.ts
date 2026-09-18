@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ClienteService } from '../services/cliente';
 import { VisitaService } from '../services/visita';
 import { TecnicoService } from '../services/tecnico';
-import { forkJoin } from 'rxjs';
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +19,7 @@ export class Dashboard implements OnInit {
   visitasPendientes: number = 0;
   tecnicosActivos: number = 0;
   agendaHoy: any[] = [];
+  esAdmin: boolean = false;
   
   // Mapeo de estados
   estadosVisita = ['Programada', 'En Camino', 'Completada', 'Cancelada', 'Fallida'];
@@ -26,44 +27,80 @@ export class Dashboard implements OnInit {
   constructor(
     private clienteService: ClienteService,
     private visitaService: VisitaService,
-    private tecnicoService: TecnicoService
+    private tecnicoService: TecnicoService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.esAdmin = this.authService.esAdministrador();
     this.cargarDatos();
   }
 
   cargarDatos() {
-    // Usamos forkJoin para hacer las peticiones en paralelo
-    forkJoin({
-      clientes: this.clienteService.getClientes(),
-      visitas: this.visitaService.getVisitas(),
-      tecnicos: this.tecnicoService.getTecnicos()
-    }).subscribe({
-      next: (datos) => {
-        this.totalClientes = datos.clientes.length;
-        this.tecnicosActivos = datos.tecnicos.length;
+    // Si es admin, cargamos clientes y técnicos
+    if (this.esAdmin) {
+      this.clienteService.getClientes().subscribe({
+        next: (clientes) => {
+          this.totalClientes = clientes?.length || 0;
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Error cargando clientes', err)
+      });
 
-        // Procesar visitas
-        const hoy = new Date();
-        const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-        const finHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
+      this.tecnicoService.getTecnicos().subscribe({
+        next: (tecnicos) => {
+          this.tecnicosActivos = tecnicos?.length || 0;
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Error cargando técnicos', err)
+      });
+    }
 
-        // 0 = Programada, 1 = En Camino
-        this.visitasPendientes = datos.visitas.filter((v: any) => v.estado === 0 || v.estado === 1).length;
+    // Visitas
+    if (this.esAdmin) {
+      this.visitaService.getVisitas().subscribe({
+        next: (visitas) => this.procesarVisitas(visitas),
+        error: (err) => console.error('Error cargando todas las visitas', err)
+      });
+    } else {
+      // Si es un técnico, simularemos que es el ID 1 por ahora, hasta que exista el vínculo en base de datos.
+      const tecnicoId = 1; 
+      // Calculamos la fecha actual en YYYY-MM-DD
+      const hoy = new Date();
+      const year = hoy.getFullYear();
+      const month = String(hoy.getMonth() + 1).padStart(2, '0');
+      const day = String(hoy.getDate()).padStart(2, '0');
+      const fechaHoy = `${year}-${month}-${day}`;
 
-        this.agendaHoy = datos.visitas.filter((v: any) => {
-          const fechaVisita = new Date(v.fechaVisita);
-          return fechaVisita >= inicioHoy && fechaVisita <= finHoy;
-        });
+      this.visitaService.getVisitasPorFecha(tecnicoId, fechaHoy).subscribe({
+        next: (visitas) => this.procesarVisitas(visitas),
+        error: (err) => console.error('Error cargando agenda del técnico', err)
+      });
+    }
+  }
 
-        this.visitasHoy = this.agendaHoy.length;
+  procesarVisitas(visitas: any[]) {
+    if (!visitas) return;
 
-        // Ordenar agenda de hoy por hora
-        this.agendaHoy.sort((a, b) => new Date(a.fechaVisita).getTime() - new Date(b.fechaVisita).getTime());
-      },
-      error: (err) => console.error('Error cargando el dashboard', err)
+    const hoy = new Date();
+    const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    const finHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
+
+    // Si es técnico, 'getVisitasPorFecha' ya nos trae solo las de hoy, pero si es admin, vienen TODAS.
+    // Igual filtramos por seguridad.
+    this.agendaHoy = visitas.filter((v: any) => {
+      const fechaVisita = new Date(v.fechaVisita);
+      return fechaVisita >= inicioHoy && fechaVisita <= finHoy;
     });
+
+    this.visitasHoy = this.agendaHoy.length;
+    this.visitasPendientes = this.agendaHoy.filter((v: any) => v.estado === 0 || v.estado === 1).length;
+
+    // Ordenar agenda de hoy por hora
+    this.agendaHoy.sort((a, b) => new Date(a.fechaVisita).getTime() - new Date(b.fechaVisita).getTime());
+    
+    this.cdr.detectChanges();
   }
 
   obtenerClaseEstado(estado: number): string {
