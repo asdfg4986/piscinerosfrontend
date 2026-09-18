@@ -1,25 +1,30 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth';
 import { ClienteService } from '../services/cliente';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-clientes',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './clientes.html',
   styleUrl: './clientes.scss'
 })
 export class Clientes implements OnInit {
   clientes: any[] = [];
+  esAdmin: boolean = false;
 
   constructor(
     private clienteService: ClienteService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.esAdmin = this.authService.esAdministrador();
     this.cargarClientes(); // Llamamos a la función al iniciar
   }
 

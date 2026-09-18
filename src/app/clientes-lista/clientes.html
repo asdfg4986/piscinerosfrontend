@@ -1,7 +1,7 @@
 <div>
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h3>Listado de Clientes</h3>
-    <button class="btn btn-primary" (click)="irANuevoCliente()">+ Nuevo Cliente</button>
+    <button *ngIf="esAdmin" class="btn btn-primary" (click)="irANuevoCliente()">+ Nuevo Cliente</button>
   </div>
   
   <table class="table table-striped table-hover">
@@ -25,10 +25,10 @@
             <button class="btn btn-sm btn-info me-2" (click)="verVisitas(cliente.id)">
               Visitas
             </button>
-            <button class="btn btn-sm btn-warning me-2" (click)="editar(cliente.id)">
+            <button *ngIf="esAdmin" class="btn btn-sm btn-warning me-2" (click)="editar(cliente.id)">
               Editar
             </button>
-            <button class="btn btn-sm btn-danger" (click)="eliminar(cliente.id, cliente.nombre)">
+            <button *ngIf="esAdmin" class="btn btn-sm btn-danger" (click)="eliminar(cliente.id, cliente.nombre)">
               Eliminar
             </button>
           </td>

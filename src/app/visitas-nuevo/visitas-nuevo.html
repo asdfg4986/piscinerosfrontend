@@ -11,7 +11,7 @@
         <input type="datetime-local" class="form-control" formControlName="fechaVisita">
       </div>
 
-      <div class="mb-3">
+      <div class="mb-3" *ngIf="esAdmin">
         <label class="form-label">Técnico Asignado</label>
         <select class="form-select" formControlName="tecnicoId">
           <option value="" disabled selected>Seleccione un técnico...</option>

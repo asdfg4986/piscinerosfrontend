@@ -19,6 +19,7 @@ export class Dashboard implements OnInit {
   visitasPendientes: number = 0;
   tecnicosActivos: number = 0;
   agendaHoy: any[] = [];
+  proximasVisitas: any[] = [];
   esAdmin: boolean = false;
   
   // Mapeo de estados
@@ -102,6 +103,11 @@ export class Dashboard implements OnInit {
     // Ordenar agenda de hoy por hora
     this.agendaHoy.sort((a, b) => new Date(a.fechaVisita).getTime() - new Date(b.fechaVisita).getTime());
     
+    // Dejar solo las proximas 3 (las pendientes)
+    this.proximasVisitas = this.agendaHoy
+      .filter((v: any) => v.estado === 0 || v.estado === 1) // Solo programada o en camino
+      .slice(0, 3);
+      
     this.cdr.detectChanges();
   }
 

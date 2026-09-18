@@ -35,10 +35,10 @@
           </td>
           <td>{{ visita.observaciones }}</td>
           <td style="white-space: nowrap;">
-            <button class="btn btn-sm btn-warning me-2" (click)="editarVisita(visita.id)">
+            <button *ngIf="esAdmin" class="btn btn-sm btn-warning me-2" (click)="editarVisita(visita.id)">
               Actualizar
             </button>
-            <button class="btn btn-sm btn-danger" (click)="eliminarVisita(visita.id)">
+            <button *ngIf="esAdmin" class="btn btn-sm btn-danger" (click)="eliminarVisita(visita.id)">
               Eliminar
             </button>
           </td>

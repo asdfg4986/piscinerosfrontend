@@ -1,28 +1,32 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VisitaService } from '../services/visita';
-import { DatePipe } from '@angular/common';
+import { DatePipe, CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-visitas-lista',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, CommonModule],
   templateUrl: './visitas-lista.html',
   styleUrl: './visitas-lista.scss'
 })
 export class VisitasLista implements OnInit {
   visitas: any[] = [];
   clienteId!: number;
+  esAdmin: boolean = false;
 
   constructor(
     private visitaService: VisitaService,
     private route: ActivatedRoute,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.esAdmin = this.authService.esAdministrador();
     // Obtenemos el ID del cliente desde la URL
     this.clienteId = Number(this.route.snapshot.paramMap.get('id'));
     this.cargarVisitas();

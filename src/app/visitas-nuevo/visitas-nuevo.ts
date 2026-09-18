@@ -4,11 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { VisitaService } from '../services/visita';
 import { TecnicoService } from '../services/tecnico';
 import Swal from 'sweetalert2';
+import { AuthService } from '../services/auth';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-visitas-nuevo',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './visitas-nuevo.html',
   styleUrl: './visitas-nuevo.scss'
 })
@@ -16,6 +18,7 @@ export class VisitasNuevo implements OnInit {
   formulario: FormGroup;
   clienteId!: number;
   tecnicos: any[] = [];
+  esAdmin: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -23,7 +26,8 @@ export class VisitasNuevo implements OnInit {
     private tecnicoService: TecnicoService,
     private route: ActivatedRoute,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) {
     // Configuramos el formulario con las validaciones básicas
     this.formulario = this.fb.group({
@@ -34,9 +38,17 @@ export class VisitasNuevo implements OnInit {
   }
 
   ngOnInit(): void {
+    this.esAdmin = this.authService.esAdministrador();
     // Leemos a qué cliente le estamos agendando esta visita
     this.clienteId = Number(this.route.snapshot.paramMap.get('id'));
-    this.cargarTecnicos(); // Cargamos los técnicos disponibles
+    
+    if (this.esAdmin) {
+      this.cargarTecnicos(); // Cargamos los técnicos disponibles para el admin
+    } else {
+      // Si es un técnico, asignamos su propio ID al form y no hace falta cargar todos los técnicos
+      const miId = this.authService.obtenerTecnicoId();
+      this.formulario.patchValue({ tecnicoId: miId });
+    }
   }
 
   cargarTecnicos() {

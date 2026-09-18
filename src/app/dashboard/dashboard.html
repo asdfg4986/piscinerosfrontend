@@ -44,10 +44,10 @@
 
   <div class="row">
     <!-- Today's Schedule -->
-    <div [ngClass]="esAdmin ? 'col-md-8' : 'col-md-12'" class="mb-4">
+    <div class="col-md-8 mb-4">
       <div class="card shadow-sm h-100">
         <div class="card-header bg-white py-3">
-          <h5 class="mb-0 fw-bold">Agenda del Día (Hoy)</h5>
+          <h5 class="mb-0 fw-bold">Próximas 3 Visitas (Hoy)</h5>
         </div>
         <div class="card-body p-0">
           <div class="table-responsive">
@@ -61,7 +61,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let visita of agendaHoy">
+                <tr *ngFor="let visita of proximasVisitas">
                   <td class="ps-4">{{ visita.fechaVisita | date:'HH:mm' }}</td>
                   <td>{{ visita.cliente?.nombre || 'Cliente Desconocido' }}</td>
                   <td>{{ visita.tecnico?.nombre || 'Sin Asignar' }}</td>
@@ -71,8 +71,8 @@
                     </span>
                   </td>
                 </tr>
-                <tr *ngIf="agendaHoy.length === 0">
-                  <td colspan="4" class="text-center py-4 text-muted">No hay visitas agendadas para hoy.</td>
+                <tr *ngIf="proximasVisitas.length === 0">
+                  <td colspan="4" class="text-center py-4 text-muted">No tienes próximas visitas pendientes para hoy.</td>
                 </tr>
               </tbody>
             </table>
@@ -98,12 +98,12 @@
               + Nuevo Técnico
             </div>
           </a>
-          <a routerLink="/agenda" class="btn btn-outline-primary d-flex align-items-center justify-content-center p-3 text-start" [ngClass]="{'mt-auto': !esAdmin}">
+          <a routerLink="/agenda" class="btn btn-outline-primary d-flex align-items-center justify-content-center p-3 text-start">
             <div class="w-100 text-center fw-bold">
               📅 {{ esAdmin ? 'Ver Agenda Completa' : 'Ver Mi Agenda en Terreno' }}
             </div>
           </a>
-          <a *ngIf="esAdmin" routerLink="/clientes" class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-3 text-start mt-auto">
+          <a routerLink="/clientes" class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-3 text-start mt-auto">
             <div class="w-100 text-center fw-bold">
               👥 Ver Directorio de Clientes
             </div>
