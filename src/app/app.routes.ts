@@ -9,8 +9,15 @@ import { VisitasNuevo } from './visitas-nuevo/visitas-nuevo';
 import { VisitasEditar } from './visitas-editar/visitas-editar';
 import { LoginComponent } from './login/login';
 import { authGuard } from './guards/auth-guard';
+import { VisitasAgendaTecnico } from './visitas-agenda-tecnico/visitas-agenda-tecnico';
+import { VisitasAgendaEjecucion } from './visitas-agenda-ejecucion/visitas-agenda-ejecucion';
+import { VisitasAgendaDetalle } from './visitas-agenda-detalle/visitas-agenda-detalle';
+import { Dashboard } from './dashboard/dashboard';
 
 export const routes: Routes = [
+  // Dashboard
+  { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
+
   // Cuando la URL sea /clientes, muestra el componente
   { path: 'clientes', component: Clientes, canActivate: [authGuard] },
 
@@ -29,6 +36,15 @@ export const routes: Routes = [
   // Ruta para editar una visita existente
   { path: 'clientes/:clienteId/visitas/editar/:id', component: VisitasEditar, canActivate: [authGuard] },
 
+  // Ruta para ver la agenda de un técnico específico
+  { path: 'agenda', component: VisitasAgendaTecnico, canActivate: [authGuard] },
+
+  // Ruta para ejecutar una visita
+  { path: 'agenda/ejecutar/:id', component: VisitasAgendaEjecucion, canActivate: [authGuard] },
+
+  // Ruta para ver los detalles de una visita completada
+  { path: 'agenda/detalle/:id', component: VisitasAgendaDetalle, canActivate: [authGuard] },
+
   // Ruta para el login
   { 
     path: 'login', 
@@ -40,7 +56,7 @@ export const routes: Routes = [
         
         if (auth.estaAutenticado()) {
           // Si ya tiene sesión, lo "pateamos" al panel principal y le prohibimos ver el login
-          router.navigate(['/clientes']);
+          router.navigate(['/dashboard']);
           return false;
         }
         // Si no tiene sesión, lo dejamos ver el formulario
@@ -49,23 +65,23 @@ export const routes: Routes = [
     ]
   },
 
-  // Si el usuario entra a la raíz (/), redirige a login o a clientes según si tiene sesión iniciada o no
+  // Si el usuario entra a la raíz (/), redirige a login o a dashboard según si tiene sesión iniciada o no
   { 
     path: '', 
     pathMatch: 'full',
     redirectTo: () => {
       const auth = inject(AuthService);
-      // Si tiene token va a clientes, si no, a login
-      return auth.estaAutenticado() ? '/clientes' : '/login'; 
+      // Si tiene token va a dashboard, si no, a login
+      return auth.estaAutenticado() ? '/dashboard' : '/login'; 
     }
   },
 
-  // Ruta comodín para cualquier otra URL no definida, redirige a login o clientes según el estado de autenticación
+  // Ruta comodín para cualquier otra URL no definida
   { 
     path: '**', 
     redirectTo: () => {
       const auth = inject(AuthService);
-      return auth.estaAutenticado() ? '/clientes' : '/login';
+      return auth.estaAutenticado() ? '/dashboard' : '/login';
     }
   }
 ];

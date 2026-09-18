@@ -1,0 +1,46 @@
+<div class="container mt-4 mb-5" style="max-width: 500px;">
+  
+  <button class="btn btn-link text-decoration-none p-0 mb-3" (click)="volver()">
+    <i class="bi bi-arrow-left"></i> Volver a mi ruta
+  </button>
+
+  @if (!visitaActual) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+    </div>
+  } @else {
+    <!-- Tarjeta de Información -->
+    <div class="card shadow-sm mb-4 border-0">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="bi bi-check-circle-fill"></i> Visita Completada</h5>
+      </div>
+      <div class="card-body">
+        <h4 class="card-title">{{ visitaActual.cliente?.nombre || 'Cliente' }}</h4>
+        <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ visitaActual.cliente?.direccion }}</p>
+        <p class="text-muted mb-3"><i class="bi bi-clock"></i> {{ visitaActual.fechaVisita | date:'dd/MM/yyyy HH:mm' }} hrs</p>
+        
+        @if (visitaActual.observaciones) {
+          <div class="alert alert-info p-2 small">
+            <strong>Instrucciones:</strong> {{ visitaActual.observaciones }}
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Sección de Evidencia -->
+    <div class="card shadow-sm border-0 border-top border-success border-4 text-center p-4">
+      <h5 class="mb-3">Evidencia Fotográfica</h5>
+      
+      @if (visitaActual.fotoUrl) {
+        <div>
+          <img [src]="visitaActual.fotoUrl" class="img-fluid rounded border shadow-sm mb-3" alt="Piscina Limpia">
+        </div>
+      } @else {
+        <div class="text-muted p-4 border rounded">
+          <i class="bi bi-image text-secondary mb-2" style="font-size: 2rem;"></i><br>
+          <small>No hay foto registrada para esta visita.</small>
+        </div>
+      }
+    </div>
+  }
+</div>
