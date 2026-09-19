@@ -27,7 +27,8 @@ export class NuevoCliente implements OnInit {
     this.formulario = this.fb.group({
       nombre: ['', Validators.required],
       direccion: ['', Validators.required],
-      comuna: ['', Validators.required] 
+      comuna: ['', Validators.required],
+      correo: ['']
     });
   }
 

@@ -29,6 +29,7 @@ export class EditarCliente implements OnInit {
       nombre: ['', Validators.required],
       direccion: ['', Validators.required],
       comuna: ['', Validators.required],
+      correo: [''],
       activo: [true]
     });
   }
@@ -45,6 +46,7 @@ export class EditarCliente implements OnInit {
           nombre: datos.nombre,
           direccion: datos.direccion,
           comuna: datos.comuna,
+          correo: datos.correo,
           activo: datos.activo
         });
         this.cargarComunas(); // Cargar comunas después de obtener los datos del cliente
