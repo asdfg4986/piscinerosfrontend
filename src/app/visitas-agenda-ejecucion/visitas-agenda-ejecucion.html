@@ -21,7 +21,7 @@
         
         @if (visitaActual.observaciones) {
           <div class="alert alert-info p-2 small">
-            <strong>Instrucciones:</strong> {{ visitaActual.observaciones }}
+            <strong>{{ visitaActual.estado === 2 ? 'Observaciones:' : 'Instrucciones:' }}</strong> {{ visitaActual.observaciones }}
           </div>
         }
       </div>
@@ -56,6 +56,11 @@
 
     <!-- Botón de Finalizar (Solo aparece si ya se tomó la foto) -->
     @if (fotoPreview) {
+      <div class="card shadow-sm border-0 border-top border-info border-4 text-center p-4 mt-4">
+        <h5 class="mb-3">Observaciones de la Visita</h5>
+        <textarea class="form-control" rows="3" [(ngModel)]="observacionesFinales" placeholder="Opcional. Escribe aquí si hubo algún problema o detalle adicional..."></textarea>
+      </div>
+
       <div class="d-grid mt-4">
         <button class="btn btn-success btn-lg shadow" (click)="finalizarTrabajo()" [disabled]="procesando">
           @if (procesando) {

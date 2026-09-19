@@ -4,11 +4,12 @@ import { VisitaService } from '../services/visita';
 import imageCompression from 'browser-image-compression';
 import Swal from 'sweetalert2';
 import { DatePipe, Location } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-visitas-agenda-ejecucion',
   standalone: true,
-  imports: [DatePipe],
+  imports: [DatePipe, FormsModule],
   templateUrl: './visitas-agenda-ejecucion.html',
   styleUrl: './visitas-agenda-ejecucion.scss',
 })
@@ -21,6 +22,7 @@ export class VisitasAgendaEjecucion implements OnInit {
 
   visitaId!: number;
   visitaActual: any = null;
+  observacionesFinales: string = ''; // Espacio en blanco inicial
   
   // Variables para la cámara
   fotoPreview: string | ArrayBuffer | null = null;
@@ -104,7 +106,8 @@ export class VisitasAgendaEjecucion implements OnInit {
         const visitaActualizada = { 
           ...visitaLimpia, 
           estado: 2,
-          fotoUrl: response.url 
+          fotoUrl: response.url,
+          observaciones: this.observacionesFinales // Aquí enviamos las observaciones nuevas (o vacío)
         };
         
         this.visitaService.actualizarVisita(this.visitaId, visitaActualizada).subscribe({
