@@ -29,10 +29,8 @@
         <div class="card-body">
           
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="badge" 
-                  [class.bg-primary]="visita.estado === 0"
-                  [class.bg-success]="visita.estado === 2">
-              {{ visita.estado === 0 ? 'Programada' : 'Completada' }}
+            <span class="badge {{ getEstadoInfo(visita.estado).clase }}">
+              {{ getEstadoInfo(visita.estado).texto }}
             </span>
             <small class="text-muted fw-bold">{{ visita.fechaVisita | date:'HH:mm' }} hrs</small>
           </div>
@@ -46,12 +44,19 @@
           </p>
           <div *ngIf="!esAdmin" class="mb-3"></div>
 
-          <div class="d-grid">
+          <div class="d-grid gap-2">
             <button class="btn btn-sm" 
-                    [class.btn-primary]="visita.estado === 0"
+                    [class.btn-primary]="visita.estado === 0 || visita.estado === 1"
                     [class.btn-outline-success]="visita.estado === 2"
+                    [class.btn-outline-secondary]="visita.estado === 3 || visita.estado === 4"
                     (click)="irAEjecucion(visita)">
-              {{ visita.estado === 0 ? 'Iniciar Trabajo' : 'Ver Detalles' }}
+              {{ (visita.estado === 0 || visita.estado === 1) ? 'Iniciar Trabajo' : 'Ver Detalles' }}
+            </button>
+            
+            <button *ngIf="visita.estado === 0 || visita.estado === 1" 
+                    class="btn btn-sm btn-outline-danger" 
+                    (click)="marcarFallida(visita)">
+              <i class="bi bi-x-circle"></i> Marcar como Fallida
             </button>
           </div>
 

@@ -11,8 +11,11 @@
   } @else {
     <!-- Tarjeta de Información -->
     <div class="card shadow-sm mb-4 border-0">
-      <div class="card-header bg-success text-white">
-        <h5 class="mb-0"><i class="bi bi-check-circle-fill"></i> Visita Completada</h5>
+      <div class="card-header text-white" [ngClass]="getEstadoInfo().clase">
+        <h5 class="mb-0">
+          <i class="bi" [ngClass]="getEstadoInfo().icono"></i> 
+          {{ getEstadoInfo().texto }}
+        </h5>
       </div>
       <div class="card-body">
         <h4 class="card-title">{{ visitaActual.cliente?.nombre || 'Cliente' }}</h4>
@@ -30,13 +33,37 @@
       </div>
     </div>
 
+    <!-- Tareas Realizadas (Solo si está completada) -->
+    @if (visitaActual.estado === 2) {
+      <div class="card shadow-sm border-0 border-top border-success border-4 p-4 mt-4 mb-4 text-start">
+        <h5 class="mb-3">Tareas Realizadas</h5>
+        <ul class="mb-0">
+          <li *ngIf="visitaActual.cloro">Regulación de cloro</li>
+          <li *ngIf="visitaActual.ph">Regulación de PH</li>
+          <li *ngIf="visitaActual.retrolavado">Retrolavado y enjuague de filtro</li>
+          <li *ngIf="visitaActual.canastillos">Limpieza de canastillos</li>
+          <li *ngIf="visitaActual.aspirado">Aspirado</li>
+          <li *ngIf="visitaActual.cepillado">Cepillado</li>
+          <li *ngIf="visitaActual.llaves">Devolución de llaves</li>
+          <li *ngIf="visitaActual.llenando">Se deja llenando</li>
+          <li class="text-muted fst-italic" *ngIf="!visitaActual.cloro && !visitaActual.ph && !visitaActual.retrolavado && !visitaActual.canastillos && !visitaActual.aspirado && !visitaActual.cepillado && !visitaActual.llaves && !visitaActual.llenando">
+            No se marcaron tareas específicas.
+          </li>
+        </ul>
+      </div>
+    }
+
     <!-- Sección de Evidencia -->
-    <div class="card shadow-sm border-0 border-top border-success border-4 text-center p-4">
+    <div class="card shadow-sm border-0 border-top border-4 text-center p-4"
+         [class.border-success]="visitaActual.estado === 2"
+         [class.border-danger]="visitaActual.estado === 3"
+         [class.border-dark]="visitaActual.estado === 4"
+         [class.border-secondary]="visitaActual.estado !== 2 && visitaActual.estado !== 3 && visitaActual.estado !== 4">
       <h5 class="mb-3">Evidencia Fotográfica</h5>
       
       @if (visitaActual.fotoUrl) {
         <div>
-          <img [src]="visitaActual.fotoUrl" class="img-fluid rounded border shadow-sm mb-3" alt="Piscina Limpia">
+          <img [src]="visitaActual.fotoUrl" class="img-fluid rounded border shadow-sm mb-3" alt="Foto Evidencia">
         </div>
       } @else {
         <div class="text-muted p-4 border rounded">

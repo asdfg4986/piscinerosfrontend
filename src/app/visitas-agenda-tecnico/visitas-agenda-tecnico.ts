@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { VisitaService } from '../services/visita';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-visitas-agenda-tecnico',
@@ -99,11 +100,60 @@ export class VisitasAgendaTecnico implements OnInit {
     this.cargarVisitas(); // Volvemos a consultar a C# con la nueva fecha
   }
 
-  irAEjecucion(visita: any) {
-    if (visita.estado === 2) {
-      this.router.navigate(['/agenda/detalle', visita.id]);
-    } else {
-      this.router.navigate(['/agenda/ejecutar', visita.id]);
+  // Función para traducir el Enum de C# a texto y color de Bootstrap
+  getEstadoInfo(estado: number): { texto: string, clase: string } {
+    switch (estado) {
+      case 0: return { texto: 'Programada', clase: 'bg-primary' };
+      case 1: return { texto: 'En Camino', clase: 'bg-info text-dark' };
+      case 2: return { texto: 'Completada', clase: 'bg-success' };
+      case 3: return { texto: 'Cancelada', clase: 'bg-danger' };
+      case 4: return { texto: 'Fallida', clase: 'bg-dark' };
+      default: return { texto: 'Desconocido', clase: 'bg-secondary' };
     }
+  }
+
+  irAEjecucion(visita: any) {
+    // Si la visita está Programada (0) o En Camino (1), vamos a ejecutarla.
+    // De lo contrario (Completada, Cancelada, Fallida), solo vemos los detalles.
+    if (visita.estado === 0 || visita.estado === 1) {
+      this.router.navigate(['/agenda/ejecutar', visita.id]);
+    } else {
+      this.router.navigate(['/agenda/detalle', visita.id]);
+    }
+  }
+
+  marcarFallida(visita: any) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede revertir. La visita será marcada permanentemente como Fallida (ej: cliente no estaba en casa).',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, marcar como Fallida',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cargando = true;
+        // Solo necesitamos enviar el ID y el nuevo estado
+        const payload = {
+          id: visita.id,
+          estado: 4
+        };
+        
+        this.visitaService.actualizarVisita(visita.id, payload).subscribe({
+          next: () => {
+            this.cargando = false;
+            Swal.fire('Actualizado', 'La visita ha sido marcada como Fallida.', 'success');
+            this.cargarVisitas();
+          },
+          error: (err) => {
+            console.error('Error al marcar fallida:', err);
+            this.cargando = false;
+            Swal.fire('Error', 'Hubo un problema al actualizar el estado.', 'error');
+          }
+        });
+      }
+    });
   }
 }
