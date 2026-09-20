@@ -1,0 +1,159 @@
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { VisitaService } from '../services/visita';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth';
+import Swal from 'sweetalert2';
+
+@Component({
+  selector: 'app-visitas-agenda-tecnico',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './visitas-agenda-tecnico.html',
+  styleUrl: './visitas-agenda-tecnico.scss',
+})
+export class VisitasAgendaTecnico implements OnInit {
+  visitaService = inject(VisitaService);
+  authService = inject(AuthService);
+  router = inject(Router);
+  cdr = inject(ChangeDetectorRef);
+  tecnicoId: number | null = null;
+  visitas: any[] = [];
+  cargando = false;
+  esAdmin = false;
+  
+  // Variable que almacena la fecha seleccionada (formato YYYY-MM-DD)
+  fechaSeleccionada: string = '';
+  
+  ngOnInit() {
+    this.esAdmin = this.authService.esAdministrador();
+    if (!this.esAdmin) {
+      this.tecnicoId = this.authService.obtenerTecnicoId();
+    }
+    // Inicializamos con la fecha de hoy
+    this.fechaSeleccionada = this.obtenerFechaIso(new Date());
+    this.cargarVisitas();
+  }
+
+  // Convierte un objeto Date a texto YYYY-MM-DD sin problemas de zona horaria local
+  obtenerFechaIso(fecha: Date): string {
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  cargarVisitas() {
+    this.cargando = true;
+    
+    // Si es administrador, cargamos todas las visitas y las filtramos localmente por fecha
+    if (this.esAdmin) {
+      this.visitaService.getVisitas().subscribe({
+        next: (data) => {
+          // Filtrar las visitas por la fecha seleccionada
+          this.visitas = data.filter((v: any) => {
+            const fechaObj = new Date(v.fechaVisita);
+            const fechaStr = this.obtenerFechaIso(fechaObj);
+            return fechaStr === this.fechaSeleccionada;
+          });
+          
+          // Ordenar por hora
+          this.visitas.sort((a, b) => new Date(a.fechaVisita).getTime() - new Date(b.fechaVisita).getTime());
+
+          console.log('Todas las visitas (Admin):', this.visitas);
+          this.cargando = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error cargando agenda total', err);
+          this.cargando = false;
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      // Si es un técnico, obtenemos solo las suyas
+      if (!this.tecnicoId) return;
+      
+      this.visitaService.getVisitasPorFecha(this.tecnicoId, this.fechaSeleccionada).subscribe({
+        next: (data) => {
+          console.log('Visitas del técnico:', data);
+          this.visitas = data;
+          this.cargando = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error cargando agenda', err);
+          this.cargando = false;
+          this.cdr.detectChanges();
+        }
+      });
+    }
+  }
+
+  // Función para cambiar de día al hacer clic en los botones
+  cambiarDia(dias: number) {
+    const [year, month, day] = this.fechaSeleccionada.split('-').map(Number);
+    const fechaObj = new Date(year, month - 1, day);
+    fechaObj.setDate(fechaObj.getDate() + dias);
+    
+    this.fechaSeleccionada = this.obtenerFechaIso(fechaObj);
+    this.cargarVisitas(); // Volvemos a consultar a C# con la nueva fecha
+  }
+
+  // Función para traducir el Enum de C# a texto y color de Bootstrap
+  getEstadoInfo(estado: number): { texto: string, clase: string } {
+    switch (estado) {
+      case 0: return { texto: 'Programada', clase: 'bg-primary' };
+      case 1: return { texto: 'En Camino', clase: 'bg-info text-dark' };
+      case 2: return { texto: 'Completada', clase: 'bg-success' };
+      case 3: return { texto: 'Cancelada', clase: 'bg-danger' };
+      case 4: return { texto: 'Fallida', clase: 'bg-dark' };
+      default: return { texto: 'Desconocido', clase: 'bg-secondary' };
+    }
+  }
+
+  irAEjecucion(visita: any) {
+    // Si la visita está Programada (0) o En Camino (1), vamos a ejecutarla.
+    // De lo contrario (Completada, Cancelada, Fallida), solo vemos los detalles.
+    if (visita.estado === 0 || visita.estado === 1) {
+      this.router.navigate(['/agenda/ejecutar', visita.id]);
+    } else {
+      this.router.navigate(['/agenda/detalle', visita.id]);
+    }
+  }
+
+  marcarFallida(visita: any) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede revertir. La visita será marcada permanentemente como Fallida (ej: cliente no estaba en casa).',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Sí, marcar como Fallida',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cargando = true;
+        // Solo necesitamos enviar el ID y el nuevo estado
+        const payload = {
+          id: visita.id,
+          estado: 4
+        };
+        
+        this.visitaService.actualizarVisita(visita.id, payload).subscribe({
+          next: () => {
+            this.cargando = false;
+            Swal.fire('Actualizado', 'La visita ha sido marcada como Fallida.', 'success');
+            this.cargarVisitas();
+          },
+          error: (err) => {
+            console.error('Error al marcar fallida:', err);
+            this.cargando = false;
+            Swal.fire('Error', 'Hubo un problema al actualizar el estado.', 'error');
+          }
+        });
+      }
+    });
+  }
+}

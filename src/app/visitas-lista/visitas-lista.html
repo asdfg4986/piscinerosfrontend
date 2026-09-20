@@ -1,0 +1,105 @@
+<div>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <!-- Botón para regresar a la lista de clientes -->
+      <button class="btn btn-outline-secondary btn-sm mb-2" (click)="volver()">
+        &larr; Volver a Clientes
+      </button>
+      <h3>Historial de Mantenimientos</h3>
+    </div>
+    <button class="btn btn-info text-white" (click)="irANuevaVisita()">+ Registrar Visita</button>
+  </div>
+  
+  <!-- Filtros -->
+  <div class="row mb-3 bg-light p-3 rounded border">
+    <div class="col-md-3 mb-2 mb-md-0">
+      <label class="form-label text-muted small mb-1">Filtrar por Estado</label>
+      <select class="form-select" [(ngModel)]="filtroEstado" (ngModelChange)="alCambiarFiltro()">
+        <option value="Todos">Todos</option>
+        <option value="0">Programada</option>
+        <option value="1">En Camino</option>
+        <option value="2">Completada</option>
+        <option value="3">Cancelada</option>
+        <option value="4">Fallida</option>
+      </select>
+    </div>
+    <div class="col-md-3 mb-2 mb-md-0">
+      <label class="form-label text-muted small mb-1">Filtrar por Técnico</label>
+      <select class="form-select" [(ngModel)]="filtroTecnico" (ngModelChange)="alCambiarFiltro()">
+        <option value="Todos">Todos los técnicos</option>
+        @for (tecnico of tecnicosUnicos; track tecnico) {
+          <option [value]="tecnico">{{ tecnico }}</option>
+        }
+      </select>
+    </div>
+    <div class="col-md-3 mb-2 mb-md-0">
+      <label class="form-label text-muted small mb-1">Mes de Visita</label>
+      <input type="month" class="form-control" [(ngModel)]="filtroMes" (ngModelChange)="alCambiarFiltro()">
+    </div>
+    <div class="col-md-3 d-flex align-items-end mt-2 mt-md-0">
+      <button class="btn btn-outline-secondary w-100" (click)="limpiarFiltros()">
+        <i class="bi bi-eraser"></i> Limpiar Filtros
+      </button>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-hover mt-3">
+    <thead class="table-info">
+      <tr>
+        <th>Id</th>
+        <th>Fecha y Hora</th>
+        <th>Técnico</th>
+        <th>Estado</th>
+        <th>Observaciones</th>
+        <th style="width: 1%; white-space: nowrap;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (visita of visitasPaginadas; track visita.id) {
+        <tr>
+          <!-- Usamos el pipe 'date' nativo de Angular para formatear la fecha -->
+          <td>{{ visita.id }}</td>
+          <td>{{ visita.fechaVisita | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ visita.tecnico?.nombre }}</td>
+          <td>
+            <span class="badge {{ getEstadoInfo(visita.estado).clase }}">
+              {{ getEstadoInfo(visita.estado).texto }}
+            </span>
+          </td>
+          <td>{{ visita.observaciones }}</td>
+          <td style="white-space: nowrap;">
+            <button *ngIf="esAdmin" class="btn btn-sm btn-warning me-2" (click)="editarVisita(visita.id)">
+              Actualizar
+            </button>
+            <button *ngIf="esAdmin" class="btn btn-sm btn-danger" (click)="eliminarVisita(visita.id)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="text-center text-muted p-4">
+            No hay registros de mantenimiento para este cliente.
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <nav aria-label="Navegación de páginas de visitas" *ngIf="totalPaginas > 1">
+    <ul class="pagination justify-content-center mt-4">
+      <li class="page-item" [class.disabled]="paginaActual === 1">
+        <a class="page-link" href="javascript:void(0)" (click)="cambiarPagina(paginaActual - 1)">Anterior</a>
+      </li>
+      @for (pagina of paginas; track pagina) {
+        <li class="page-item" [class.active]="paginaActual === pagina">
+          <a class="page-link" href="javascript:void(0)" (click)="cambiarPagina(pagina)">{{ pagina }}</a>
+        </li>
+      }
+      <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+        <a class="page-link" href="javascript:void(0)" (click)="cambiarPagina(paginaActual + 1)">Siguiente</a>
+      </li>
+    </ul>
+  </nav>
+</div>

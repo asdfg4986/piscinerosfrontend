@@ -1,0 +1,69 @@
+<div>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Registrar Nuevo Técnico</h3>
+    <button class="btn btn-secondary" (click)="cancelar()">Volver</button>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form [formGroup]="formulario" (ngSubmit)="guardar()">
+        
+        <h5 class="card-title text-primary mb-3">Datos Personales</h5>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombre Completo *</label>
+            <input type="text" class="form-control" formControlName="nombre" placeholder="Ej: Juan Pérez">
+            <div *ngIf="formulario.get('nombre')?.invalid && formulario.get('nombre')?.touched" class="text-danger small mt-1">
+              El nombre es obligatorio.
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">RUT (Opcional)</label>
+            <input type="text" class="form-control" formControlName="rut" placeholder="Ej: 12.345.678-9">
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label">Teléfono (Opcional)</label>
+            <input type="text" class="form-control" formControlName="telefono" placeholder="Ej: +56912345678">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Monto a pagar por visita ($) *</label>
+            <input type="number" class="form-control" formControlName="montoPorVisita" placeholder="0">
+          </div>
+        </div>
+
+        <hr>
+        <h5 class="card-title text-primary mb-3 mt-4">Cuenta de Acceso Móvil</h5>
+        <p class="text-muted small mb-3">
+          Con estos datos el técnico podrá iniciar sesión en su celular para ver su agenda y subir fotos.
+        </p>
+
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <label class="form-label">Correo Electrónico *</label>
+            <input type="email" class="form-control" formControlName="correo" placeholder="juan@piscineros.cl">
+            <div *ngIf="formulario.get('correo')?.invalid && formulario.get('correo')?.touched" class="text-danger small mt-1">
+              Ingresa un correo electrónico válido.
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Contraseña Temporal *</label>
+            <input type="password" class="form-control" formControlName="password" placeholder="Mínimo 6 caracteres y al menos 1 número (ej: temp123)">
+            <div *ngIf="formulario.get('password')?.invalid && formulario.get('password')?.touched" class="text-danger small mt-1">
+              La contraseña debe tener al menos 6 caracteres y contener un número.
+            </div>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button type="submit" class="btn btn-primary" [disabled]="cargando">
+            <span *ngIf="cargando" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Crear Técnico y Cuenta
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

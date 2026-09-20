@@ -1,0 +1,41 @@
+<div class="card mt-4" style="max-width: 600px; margin: 0 auto;">
+  <div class="card-header bg-info text-white">
+    <h4 class="mb-0">Agendar Nuevo Mantenimiento</h4>
+  </div>
+  <div class="card-body">
+    
+    <form [formGroup]="formulario" (ngSubmit)="guardar()">
+      
+      <div class="mb-3">
+        <label class="form-label">Fecha y Hora de la visita</label>
+        <input type="datetime-local" class="form-control" formControlName="fechaVisita">
+      </div>
+
+      <div class="mb-3" *ngIf="esAdmin">
+        <label class="form-label">Técnico Asignado</label>
+        <select class="form-select" formControlName="tecnicoId">
+          <option value="" disabled selected>Seleccione un técnico...</option>
+          @for (tecnico of tecnicos; track tecnico.id) {
+            <!-- Mostramos el nombre al usuario, pero guardamos el ID en el form -->
+            <option [value]="tecnico.id">{{ tecnico.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Observaciones o Instrucciones</label>
+        <textarea class="form-control" rows="3" formControlName="observaciones" 
+                  placeholder="Ej: Llevar azul. El cliente reportó agua turbia."></textarea>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <button type="button" class="btn btn-secondary" (click)="volver()">Cancelar</button>
+        <button type="submit" class="btn btn-info text-white" [disabled]="formulario.invalid">
+          Guardar Visita
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

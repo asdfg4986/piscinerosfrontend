@@ -1,0 +1,73 @@
+<div class="container mt-4" style="max-width: 500px;">
+  <h3 class="mb-3 text-center">{{ esAdmin ? 'Agenda General' : 'Mi Agenda en Terreno' }}</h3>
+
+  <!-- Barra de Navegación de Fechas -->
+  <div class="card shadow-sm mb-4 bg-light border-0">
+    <div class="card-body d-flex justify-content-between align-items-center py-2">
+      <button class="btn btn-outline-secondary btn-sm" (click)="cambiarDia(-1)">
+        <i class="bi bi-chevron-left"></i> Ayer
+      </button>
+      
+      <span class="fw-bold text-dark">{{ fechaSeleccionada }}</span>
+
+      <button class="btn btn-outline-secondary btn-sm" (click)="cambiarDia(1)">
+        Mañana <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenido de Visitas -->
+  @if (cargando) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Sincronizando agenda...</p>
+    </div>
+  } @else {
+    
+    @for (visita of visitas; track visita.id) {
+      <div class="card shadow-sm mb-3 border-0 border-start border-primary border-4">
+        <div class="card-body">
+          
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge {{ getEstadoInfo(visita.estado).clase }}">
+              {{ getEstadoInfo(visita.estado).texto }}
+            </span>
+            <small class="text-muted fw-bold">{{ visita.fechaVisita | date:'HH:mm' }} hrs</small>
+          </div>
+
+          <h5 class="card-title text-truncate">{{ visita.cliente.nombre }}</h5>
+          <p class="card-text text-muted small mb-1">
+            <i class="bi bi-geo-alt"></i> {{ visita.cliente.direccion }}, {{ visita.cliente.comuna }}
+          </p>
+          <p *ngIf="esAdmin" class="card-text text-muted small mb-3">
+            <i class="bi bi-person"></i> Técnico: {{ visita.tecnico?.nombre || 'Sin Asignar' }}
+          </p>
+          <div *ngIf="!esAdmin" class="mb-3"></div>
+
+          <div class="d-grid gap-2">
+            <button class="btn btn-sm" 
+                    [class.btn-primary]="visita.estado === 0 || visita.estado === 1"
+                    [class.btn-outline-success]="visita.estado === 2"
+                    [class.btn-outline-secondary]="visita.estado === 3 || visita.estado === 4"
+                    (click)="irAEjecucion(visita)">
+              {{ (visita.estado === 0 || visita.estado === 1) ? 'Iniciar Trabajo' : 'Ver Detalles' }}
+            </button>
+            
+            <button *ngIf="visita.estado === 0 || visita.estado === 1" 
+                    class="btn btn-sm btn-outline-danger" 
+                    (click)="marcarFallida(visita)">
+              <i class="bi bi-x-circle"></i> Marcar como Fallida
+            </button>
+          </div>
+
+        </div>
+      </div>
+    } @empty {
+      <div class="text-center p-5 bg-white rounded border">
+        <h5 class="text-muted">Sin visitas</h5>
+        <p class="text-muted small mb-0">No hay registros asignados para este día.</p>
+      </div>
+    }
+  }  
+  
+</div>

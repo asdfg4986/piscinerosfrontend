@@ -1,0 +1,96 @@
+<div>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Listado de Clientes</h3>
+    <button *ngIf="esAdmin" class="btn btn-primary" (click)="irANuevoCliente()">+ Nuevo Cliente</button>
+  </div>
+  
+  <!-- Filtros -->
+  <div class="row mb-3 bg-light p-3 rounded border">
+    <div class="col-md-3 mb-2 mb-md-0">
+      <label class="form-label text-muted small mb-1">Buscar (Nombre/Dir.)</label>
+      <input type="text" class="form-control" placeholder="Ej. Juan Pérez..." [(ngModel)]="filtroTexto" (ngModelChange)="alCambiarFiltro()">
+    </div>
+    <div class="col-md-3 mb-2 mb-md-0">
+      <label class="form-label text-muted small mb-1">Filtrar por Comuna</label>
+      <select class="form-select" [(ngModel)]="filtroComuna" (ngModelChange)="alCambiarFiltro()">
+        <option value="">Todas</option>
+        @for (comuna of comunasUnicas; track comuna) {
+          <option [value]="comuna">{{ comuna }}</option>
+        }
+      </select>
+    </div>
+    <div class="col-md-3 mb-2 mb-md-0" *ngIf="esAdmin">
+      <label class="form-label text-muted small mb-1">Filtrar por Estado</label>
+      <select class="form-select" [(ngModel)]="filtroEstado" (ngModelChange)="alCambiarFiltro()">
+        <option value="Todos">Todos</option>
+        <option value="Activos">Activos</option>
+        <option value="Inactivos">Inactivos</option>
+      </select>
+    </div>
+    <div class="col-md-3 d-flex align-items-end mt-2 mt-md-0">
+      <button class="btn btn-outline-secondary w-100" (click)="limpiarFiltros()">
+        <i class="bi bi-eraser"></i> Limpiar Filtros
+      </button>
+    </div>
+  </div>
+
+  <table class="table table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Dirección</th>
+        <th>Comuna</th>
+        <th>Estado</th>
+        <th style="width: 1%; white-space: nowrap;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (cliente of clientesPaginados; track cliente.id) {
+        <tr>
+          <td>{{ cliente.id }}</td>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.direccion }}</td>
+          <td>{{ cliente.comuna }}</td>
+          <td>
+            <span class="badge" [ngClass]="cliente.activo ? 'bg-success' : 'bg-danger'">
+              {{ cliente.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td style="white-space: nowrap;">
+            <button class="btn btn-sm btn-info me-2" (click)="verVisitas(cliente.id)">
+              Visitas
+            </button>
+            <button *ngIf="esAdmin" class="btn btn-sm btn-warning me-2" (click)="editar(cliente.id)">
+              Editar
+            </button>
+            <button *ngIf="esAdmin" class="btn btn-sm btn-danger" (click)="eliminar(cliente.id, cliente.nombre)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="text-center text-muted">Cargando clientes o sin datos...</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <nav aria-label="Navegación de páginas de clientes" *ngIf="totalPaginas > 1">
+    <ul class="pagination justify-content-center mt-4">
+      <li class="page-item" [class.disabled]="paginaActual === 1">
+        <a class="page-link" href="javascript:void(0)" (click)="cambiarPagina(paginaActual - 1)">Anterior</a>
+      </li>
+      @for (pagina of paginas; track pagina) {
+        <li class="page-item" [class.active]="paginaActual === pagina">
+          <a class="page-link" href="javascript:void(0)" (click)="cambiarPagina(pagina)">{{ pagina }}</a>
+        </li>
+      }
+      <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+        <a class="page-link" href="javascript:void(0)" (click)="cambiarPagina(paginaActual + 1)">Siguiente</a>
+      </li>
+    </ul>
+  </nav>
+</div>

@@ -1,12 +1,24 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterOutlet, RouterModule } from '@angular/router';
+import { AuthService } from './services/auth';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [RouterOutlet, RouterModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('PiscinerosFrontend');
+  // Usamos inject()
+  authService = inject(AuthService);
+  router = inject(Router);
+
+  cerrarSesion() {
+    // 1. Destruimos el token del localStorage y la sesión del usuario
+    this.authService.logout();
+    
+    // 2. Lo enviamos de vuelta al Login
+    this.router.navigate(['/login']);
+  }
 }

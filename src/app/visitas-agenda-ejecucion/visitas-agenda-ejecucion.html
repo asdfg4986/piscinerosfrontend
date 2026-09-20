@@ -1,0 +1,112 @@
+<div class="container mt-4 mb-5" style="max-width: 500px;">
+  
+  <button class="btn btn-link text-decoration-none p-0 mb-3" (click)="volver()">
+    <i class="bi bi-arrow-left"></i> Volver a mi ruta
+  </button>
+
+  @if (!visitaActual) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+    </div>
+  } @else {
+    <!-- Tarjeta de Información -->
+    <div class="card shadow-sm mb-4 border-0">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Ejecución de Mantenimiento</h5>
+      </div>
+      <div class="card-body">
+        <h4 class="card-title">{{ visitaActual.cliente?.nombre || 'Cliente' }}</h4>
+        <p class="text-muted mb-1"><i class="bi bi-geo-alt"></i> {{ visitaActual.cliente?.direccion }}</p>
+        <p class="text-muted mb-3"><i class="bi bi-clock"></i> {{ visitaActual.fechaVisita | date:'HH:mm' }} hrs</p>
+        
+        @if (visitaActual.observaciones) {
+          <div class="alert alert-info p-2 small">
+            <strong>{{ visitaActual.estado === 2 ? 'Observaciones:' : 'Instrucciones:' }}</strong> {{ visitaActual.observaciones }}
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Sección de Evidencia (Cámara) -->
+    <div class="card shadow-sm border-0 border-top border-warning border-4 text-center p-4">
+      <h5 class="mb-3">Evidencia Fotográfica</h5>
+      
+      <!-- Input mágico oculto -->
+      <input type="file" accept="image/*" capture="environment" #inputCamara (change)="onFotoTomada($event)" style="display: none;">
+
+      <!-- Si no hay foto, mostramos el botón grande para abrir cámara -->
+      @if (!fotoPreview) {
+        <button class="btn btn-outline-primary btn-lg p-4 w-100 mb-2" (click)="inputCamara.click()" [disabled]="procesando">
+          <i class="bi bi-camera" style="font-size: 2rem;"></i><br>
+          Tomar Foto
+        </button>
+        <small class="text-muted">Requerido para finalizar la visita</small>
+      }
+
+      <!-- Si hay foto, la mostramos y damos la opción de cambiarla -->
+      @if (fotoPreview) {
+        <div>
+          <img [src]="fotoPreview" class="img-fluid rounded border shadow-sm mb-3" alt="Piscina Limpia">
+          <button class="btn btn-sm btn-outline-secondary mb-3 w-100" (click)="inputCamara.click()" [disabled]="procesando">
+            <i class="bi bi-arrow-repeat"></i> Volver a tomar foto
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Botón de Finalizar (Solo aparece si ya se tomó la foto) -->
+    @if (fotoPreview) {
+      <div class="card shadow-sm border-0 border-top border-success border-4 p-4 mt-4 text-start">
+        <h5 class="mb-3 text-center">Tareas Realizadas</h5>
+        
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkCloro" [(ngModel)]="tareas.cloro">
+          <label class="form-check-label" for="checkCloro">Regulación de cloro</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkPh" [(ngModel)]="tareas.ph">
+          <label class="form-check-label" for="checkPh">Regulación de PH</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkRetrolavado" [(ngModel)]="tareas.retrolavado">
+          <label class="form-check-label" for="checkRetrolavado">Retrolavado y enjuague de filtro</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkCanastillos" [(ngModel)]="tareas.canastillos">
+          <label class="form-check-label" for="checkCanastillos">Limpieza de canastillos</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkAspirado" [(ngModel)]="tareas.aspirado">
+          <label class="form-check-label" for="checkAspirado">Aspirado</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkCepillado" [(ngModel)]="tareas.cepillado">
+          <label class="form-check-label" for="checkCepillado">Cepillado</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkLlaves" [(ngModel)]="tareas.llaves">
+          <label class="form-check-label" for="checkLlaves">Devolución de llaves</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkLlenando" [(ngModel)]="tareas.llenando">
+          <label class="form-check-label" for="checkLlenando">Se deja llenando</label>
+        </div>
+      </div>
+
+      <div class="card shadow-sm border-0 border-top border-info border-4 text-center p-4 mt-4">
+        <h5 class="mb-3">Observaciones de la Visita</h5>
+        <textarea class="form-control" rows="3" [(ngModel)]="observacionesFinales" placeholder="Opcional. Escribe aquí si hubo algún problema o detalle adicional..."></textarea>
+      </div>
+
+      <div class="d-grid mt-4">
+        <button class="btn btn-success btn-lg shadow" (click)="finalizarTrabajo()" [disabled]="procesando">
+          @if (procesando) {
+            <span class="spinner-border spinner-border-sm"></span> Guardando y subiendo...
+          } @else {
+            <i class="bi bi-check-circle-fill"></i> Finalizar Trabajo
+          }
+        </button>
+      </div>
+    }
+  }
+</div>

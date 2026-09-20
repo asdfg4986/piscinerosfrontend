@@ -1,0 +1,46 @@
+<div class="card mt-4" style="max-width: 600px; margin: 0 auto;">
+  <div class="card-header bg-primary text-white">
+    <h4 class="mb-0">Agregar Nuevo Cliente</h4>
+  </div>
+  <div class="card-body">
+    
+    <form [formGroup]="formulario" (ngSubmit)="guardar()">
+      
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" formControlName="nombre" placeholder="Ej. Juan Pérez">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Dirección</label>
+        <input type="text" class="form-control" formControlName="direccion">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Correo Electrónico (Opcional)</label>
+        <input type="email" class="form-control" formControlName="correo" placeholder="ejemplo@correo.com">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Comuna</label>
+        <select class="form-select" formControlName="comuna">
+          <option value="" disabled selected>Seleccione una comuna...</option>
+    
+          <!-- Recorremos el arreglo de comunas que trajimos de C# -->
+          @for (comuna of comunas; track comuna.id) {
+            <option [value]="comuna.nombre">{{ comuna.nombre }}</option>
+          }
+    
+        </select>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+        <!-- El botón se desactiva solo si el formulario es inválido -->
+        <button type="submit" class="btn btn-success" [disabled]="formulario.invalid">Guardar Cliente</button>
+      </div>
+
+    </form>
+
+  </div>
+</div>
