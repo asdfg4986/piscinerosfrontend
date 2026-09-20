@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth';
 import { ClienteService } from '../services/cliente';
 import Swal from 'sweetalert2';
@@ -8,13 +9,77 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-clientes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './clientes.html',
   styleUrl: './clientes.scss'
 })
 export class Clientes implements OnInit {
   clientes: any[] = [];
   esAdmin: boolean = false;
+
+  // Filtros
+  filtroTexto: string = '';
+  filtroComuna: string = '';
+  filtroEstado: string = 'Todos';
+
+  // Paginación
+  paginaActual: number = 1;
+  tamañoPagina: number = 10;
+
+  get comunasUnicas() {
+    const comunas = this.clientes.map(c => c.comuna).filter(c => c && c.trim() !== '');
+    return [...new Set(comunas)].sort();
+  }
+
+  get clientesFiltrados() {
+    return this.clientes.filter(cliente => {
+      // Filtro de texto (Nombre o Dirección)
+      const texto = this.filtroTexto.toLowerCase();
+      const coincideTexto = cliente.nombre.toLowerCase().includes(texto) || 
+                            cliente.direccion.toLowerCase().includes(texto);
+      
+      // Filtro de Comuna
+      const coincideComuna = this.filtroComuna === '' || cliente.comuna === this.filtroComuna;
+
+      // Filtro de Estado
+      let coincideEstado = true;
+      if (this.filtroEstado === 'Activos') coincideEstado = cliente.activo === true;
+      if (this.filtroEstado === 'Inactivos') coincideEstado = cliente.activo === false;
+
+      return coincideTexto && coincideComuna && coincideEstado;
+    });
+  }
+
+  get clientesPaginados() {
+    const inicio = (this.paginaActual - 1) * this.tamañoPagina;
+    const fin = inicio + this.tamañoPagina;
+    return this.clientesFiltrados.slice(inicio, fin);
+  }
+
+  get totalPaginas() {
+    return Math.max(1, Math.ceil(this.clientesFiltrados.length / this.tamañoPagina));
+  }
+
+  alCambiarFiltro() {
+    this.paginaActual = 1;
+  }
+
+  limpiarFiltros() {
+    this.filtroTexto = '';
+    this.filtroComuna = '';
+    this.filtroEstado = 'Todos';
+    this.paginaActual = 1;
+  }
+
+  cambiarPagina(pagina: number) {
+    if (pagina >= 1 && pagina <= this.totalPaginas) {
+      this.paginaActual = pagina;
+    }
+  }
+
+  get paginas() {
+    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+  }
 
   constructor(
     private clienteService: ClienteService,
