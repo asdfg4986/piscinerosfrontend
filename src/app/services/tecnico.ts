@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TecnicoService {
-  // Ajusta esta URL si tu controlador se llama distinto
-  private apiUrl = 'https://localhost:7168/api/tecnicos';
+  private apiUrl = environment.apiUrl + '/tecnicos';
 
   constructor(private http: HttpClient) { }
 

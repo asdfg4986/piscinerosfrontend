@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // Ajusta el puerto (ej. 7168) según tu proyecto de C#
-  private apiUrl = 'https://localhost:7168/api/auth'; 
+  private apiUrl = environment.apiUrl + '/auth'; 
 
   constructor(private http: HttpClient) { }
 
