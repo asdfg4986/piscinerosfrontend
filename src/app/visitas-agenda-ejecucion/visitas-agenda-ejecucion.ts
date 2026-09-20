@@ -24,6 +24,18 @@ export class VisitasAgendaEjecucion implements OnInit {
   visitaActual: any = null;
   observacionesFinales: string = ''; // Espacio en blanco inicial
   
+  // Tareas realizadas
+  tareas = {
+    cloro: false,
+    ph: false,
+    retrolavado: false,
+    canastillos: false,
+    aspirado: false,
+    cepillado: false,
+    llaves: false,
+    llenando: false
+  };
+  
   // Variables para la cámara
   fotoPreview: string | ArrayBuffer | null = null;
   archivoComprimido: File | null = null;
@@ -107,7 +119,15 @@ export class VisitasAgendaEjecucion implements OnInit {
           ...visitaLimpia, 
           estado: 2,
           fotoUrl: response.url,
-          observaciones: this.observacionesFinales // Aquí enviamos las observaciones nuevas (o vacío)
+          observaciones: this.observacionesFinales, // Aquí enviamos las observaciones nuevas (o vacío)
+          cloro: this.tareas.cloro,
+          ph: this.tareas.ph,
+          retrolavado: this.tareas.retrolavado,
+          canastillos: this.tareas.canastillos,
+          aspirado: this.tareas.aspirado,
+          cepillado: this.tareas.cepillado,
+          llaves: this.tareas.llaves,
+          llenando: this.tareas.llenando
         };
         
         this.visitaService.actualizarVisita(this.visitaId, visitaActualizada).subscribe({

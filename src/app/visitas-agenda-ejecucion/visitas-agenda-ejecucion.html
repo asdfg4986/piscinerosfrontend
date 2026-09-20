@@ -56,6 +56,43 @@
 
     <!-- Botón de Finalizar (Solo aparece si ya se tomó la foto) -->
     @if (fotoPreview) {
+      <div class="card shadow-sm border-0 border-top border-success border-4 p-4 mt-4 text-start">
+        <h5 class="mb-3 text-center">Tareas Realizadas</h5>
+        
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkCloro" [(ngModel)]="tareas.cloro">
+          <label class="form-check-label" for="checkCloro">Regulación de cloro</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkPh" [(ngModel)]="tareas.ph">
+          <label class="form-check-label" for="checkPh">Regulación de PH</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkRetrolavado" [(ngModel)]="tareas.retrolavado">
+          <label class="form-check-label" for="checkRetrolavado">Retrolavado y enjuague de filtro</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkCanastillos" [(ngModel)]="tareas.canastillos">
+          <label class="form-check-label" for="checkCanastillos">Limpieza de canastillos</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkAspirado" [(ngModel)]="tareas.aspirado">
+          <label class="form-check-label" for="checkAspirado">Aspirado</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkCepillado" [(ngModel)]="tareas.cepillado">
+          <label class="form-check-label" for="checkCepillado">Cepillado</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkLlaves" [(ngModel)]="tareas.llaves">
+          <label class="form-check-label" for="checkLlaves">Devolución de llaves</label>
+        </div>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="checkLlenando" [(ngModel)]="tareas.llenando">
+          <label class="form-check-label" for="checkLlenando">Se deja llenando</label>
+        </div>
+      </div>
+
       <div class="card shadow-sm border-0 border-top border-info border-4 text-center p-4 mt-4">
         <h5 class="mb-3">Observaciones de la Visita</h5>
         <textarea class="form-control" rows="3" [(ngModel)]="observacionesFinales" placeholder="Opcional. Escribe aquí si hubo algún problema o detalle adicional..."></textarea>
