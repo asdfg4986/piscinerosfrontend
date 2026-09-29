@@ -34,6 +34,16 @@
         </select>
       </div>
 
+      <div class="mb-3">
+        <label class="form-label">Técnico Externo Asignado (Opcional)</label>
+        <select class="form-select" formControlName="tecnicoExternoId">
+          <option [ngValue]="null">Ninguno (Interno)</option>
+          @for (tecnico of tecnicosExternos; track tecnico.id) {
+            <option [ngValue]="tecnico.id">{{ tecnico.nombre }}</option>
+          }
+        </select>
+      </div>
+
       <div class="mb-3 form-check">
         <input type="checkbox" class="form-check-input" id="activoCheck" formControlName="activo">
         <label class="form-check-label" for="activoCheck">Cliente Activo</label>

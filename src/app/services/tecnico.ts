@@ -18,4 +18,9 @@ export class TecnicoService {
   crearTecnico(tecnico: any): Observable<any> {
     return this.http.post(this.apiUrl, tecnico);
   }
+
+  // Actualizar un técnico existente
+  actualizarTecnico(id: number, tecnicoActualizado: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, tecnicoActualizado);
+  }
 }

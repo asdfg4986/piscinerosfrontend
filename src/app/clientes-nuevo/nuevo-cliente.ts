@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { ClienteService } from '../services/cliente';
 import { ConfiguracionService } from '../services/configuracion';
+import { TecnicoService } from '../services/tecnico';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,7 +16,9 @@ import Swal from 'sweetalert2';
 export class NuevoCliente implements OnInit {
   formulario: FormGroup;
   configuracionService = inject(ConfiguracionService);
+  tecnicoService = inject(TecnicoService);
   comunas: any[] = [];
+  tecnicosExternos: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -28,12 +31,14 @@ export class NuevoCliente implements OnInit {
       nombre: ['', Validators.required],
       direccion: ['', Validators.required],
       comuna: ['', Validators.required],
-      correo: ['']
+      correo: [''],
+      tecnicoExternoId: [null]
     });
   }
 
   ngOnInit(): void {
-    this.cargarComunas(); // Llamamos a la función para cargar comunas al iniciar
+    this.cargarComunas();
+    this.cargarTecnicosExternos();
   }
 
   cargarComunas() {
@@ -43,6 +48,16 @@ export class NuevoCliente implements OnInit {
         this.cdr.detectChanges(); // Forzamos la detección de cambios
       },
       error: (err) => console.error('Error al cargar comunas:', err)
+    });
+  }
+
+  cargarTecnicosExternos() {
+    this.tecnicoService.getTecnicos().subscribe({
+      next: (datos) => {
+        this.tecnicosExternos = datos.filter((t: any) => t.activo && t.esExterno);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar técnicos:', err)
     });
   }
 
