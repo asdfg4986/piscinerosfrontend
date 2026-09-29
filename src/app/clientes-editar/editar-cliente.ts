@@ -3,12 +3,15 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClienteService } from '../services/cliente';
 import { ConfiguracionService } from '../services/configuracion';
+import { TecnicoService } from '../services/tecnico';
 import Swal from 'sweetalert2';
+
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-editar-cliente',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './editar-cliente.html',
   styleUrl: './editar-cliente.scss'
 })
@@ -16,7 +19,9 @@ export class EditarCliente implements OnInit {
   formulario: FormGroup;
   clienteId!: number;
   configuracionService = inject(ConfiguracionService);
+  tecnicoService = inject(TecnicoService);
   comunas: any[] = [];
+  tecnicosExternos: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -27,10 +32,13 @@ export class EditarCliente implements OnInit {
   ) {
     this.formulario = this.fb.group({
       nombre: ['', Validators.required],
+      numeroClienteLegacy: [''],
       direccion: ['', Validators.required],
       comuna: ['', Validators.required],
+      telefono: ['', [Validators.pattern('^\\+569\\d{8}$')]],
       correo: [''],
-      activo: [true]
+      activo: [true],
+      tecnicoExternoId: [null]
     });
   }
 
@@ -44,12 +52,16 @@ export class EditarCliente implements OnInit {
         // Llenar el formulario con los datos que llegaron
         this.formulario.patchValue({
           nombre: datos.nombre,
+          numeroClienteLegacy: datos.numeroClienteLegacy,
           direccion: datos.direccion,
           comuna: datos.comuna,
+          telefono: datos.telefono,
           correo: datos.correo,
-          activo: datos.activo
+          activo: datos.activo,
+          tecnicoExternoId: datos.tecnicoExternoId
         });
         this.cargarComunas(); // Cargar comunas después de obtener los datos del cliente
+        this.cargarTecnicosExternos();
       },
       error: (err) => console.error('Error al cargar cliente:', err)
     });
@@ -62,6 +74,16 @@ export class EditarCliente implements OnInit {
         this.cdr.detectChanges(); // Forzamos la detección de cambios
       },
       error: (err) => console.error('Error al cargar comunas:', err)
+    });
+  }
+
+  cargarTecnicosExternos() {
+    this.tecnicoService.getTecnicos().subscribe({
+      next: (datos) => {
+        this.tecnicosExternos = datos.filter((t: any) => t.activo && t.esExterno);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar técnicos:', err)
     });
   }
 
@@ -88,7 +110,11 @@ export class EditarCliente implements OnInit {
         },
         error: (err) => {
           console.error('Error al actualizar:', err);
-          Swal.fire('Error', 'No se pudo actualizar el cliente', 'error');
+          if (err.status === 400 && err.error?.mensaje) {
+            Swal.fire('Error', err.error.mensaje, 'error');
+          } else {
+            Swal.fire('Error', 'No se pudo actualizar el cliente', 'error');
+          }
         }
       });
     }

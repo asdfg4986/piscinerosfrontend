@@ -103,9 +103,14 @@
               📅 {{ esAdmin ? 'Ver Agenda Completa' : 'Ver Mi Agenda en Terreno' }}
             </div>
           </a>
-          <a routerLink="/clientes" class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-3 text-start mt-auto">
+          <a *ngIf="mostrarDirectorioClientes" routerLink="/clientes" class="btn btn-outline-secondary d-flex align-items-center justify-content-center p-3 text-start mt-auto">
             <div class="w-100 text-center fw-bold">
               👥 Ver Directorio de Clientes
+            </div>
+          </a>
+          <a *ngIf="esAdmin" routerLink="/tecnicos" class="btn btn-outline-dark d-flex align-items-center justify-content-center p-3 text-start">
+            <div class="w-100 text-center fw-bold">
+              🛠️ Ver Directorio de Técnicos
             </div>
           </a>
         </div>

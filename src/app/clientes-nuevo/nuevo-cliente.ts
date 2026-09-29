@@ -3,19 +3,24 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { ClienteService } from '../services/cliente';
 import { ConfiguracionService } from '../services/configuracion';
+import { TecnicoService } from '../services/tecnico';
 import Swal from 'sweetalert2';
+
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-nuevo-cliente',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './nuevo-cliente.html',
   styleUrl: './nuevo-cliente.scss'
 })
 export class NuevoCliente implements OnInit {
   formulario: FormGroup;
   configuracionService = inject(ConfiguracionService);
+  tecnicoService = inject(TecnicoService);
   comunas: any[] = [];
+  tecnicosExternos: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -26,14 +31,18 @@ export class NuevoCliente implements OnInit {
     // Configuramos los campos y validaciones
     this.formulario = this.fb.group({
       nombre: ['', Validators.required],
+      numeroClienteLegacy: [''],
       direccion: ['', Validators.required],
       comuna: ['', Validators.required],
-      correo: ['']
+      telefono: ['', [Validators.pattern('^\\+569\\d{8}$')]],
+      correo: [''],
+      tecnicoExternoId: [null]
     });
   }
 
   ngOnInit(): void {
-    this.cargarComunas(); // Llamamos a la función para cargar comunas al iniciar
+    this.cargarComunas();
+    this.cargarTecnicosExternos();
   }
 
   cargarComunas() {
@@ -43,6 +52,16 @@ export class NuevoCliente implements OnInit {
         this.cdr.detectChanges(); // Forzamos la detección de cambios
       },
       error: (err) => console.error('Error al cargar comunas:', err)
+    });
+  }
+
+  cargarTecnicosExternos() {
+    this.tecnicoService.getTecnicos().subscribe({
+      next: (datos) => {
+        this.tecnicosExternos = datos.filter((t: any) => t.activo && t.esExterno);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar técnicos:', err)
     });
   }
 
@@ -64,8 +83,11 @@ export class NuevoCliente implements OnInit {
         },
         error: (err) => {
           console.error('Error al guardar:', err);
-          // Alerta de error
-          Swal.fire('Error', 'Hubo un problema al guardar el cliente', 'error');
+          if (err.status === 400 && err.error?.mensaje) {
+            Swal.fire('Error', err.error.mensaje, 'error');
+          } else {
+            Swal.fire('Error', 'Hubo un problema al guardar el cliente', 'error');
+          }
         }
       });
     }

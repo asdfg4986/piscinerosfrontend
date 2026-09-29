@@ -21,6 +21,11 @@ export class Dashboard implements OnInit {
   agendaHoy: any[] = [];
   proximasVisitas: any[] = [];
   esAdmin: boolean = false;
+  esExterno: boolean = false;
+  
+  get mostrarDirectorioClientes(): boolean {
+    return this.esAdmin || this.esExterno;
+  }
   
   // Mapeo de estados
   estadosVisita = ['Programada', 'En Camino', 'Completada', 'Cancelada', 'Fallida'];
@@ -68,6 +73,15 @@ export class Dashboard implements OnInit {
       // Obtenemos el ID del técnico desde el token
       const tecnicoId = this.authService.obtenerTecnicoId(); 
       if (!tecnicoId) return; // Si no hay ID, no cargamos nada
+
+      // Obtenemos detalles del técnico para saber si es externo
+      this.tecnicoService.getTecnico(tecnicoId).subscribe({
+        next: (tecnico) => {
+          this.esExterno = tecnico.esExterno;
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Error cargando detalles del técnico', err)
+      });
 
       // Calculamos la fecha actual en YYYY-MM-DD
       const hoy = new Date();

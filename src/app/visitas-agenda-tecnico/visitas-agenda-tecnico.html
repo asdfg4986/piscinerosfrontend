@@ -39,6 +39,9 @@
           <p class="card-text text-muted small mb-1">
             <i class="bi bi-geo-alt"></i> {{ visita.cliente.direccion }}, {{ visita.cliente.comuna }}
           </p>
+          <p class="card-text text-muted small mb-1">
+            <i class="bi bi-telephone"></i> {{ visita.cliente.telefono || 'Teléfono no registrado' }}
+          </p>
           <p *ngIf="esAdmin" class="card-text text-muted small mb-3">
             <i class="bi bi-person"></i> Técnico: {{ visita.tecnico?.nombre || 'Sin Asignar' }}
           </p>

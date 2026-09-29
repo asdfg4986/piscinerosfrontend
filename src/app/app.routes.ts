@@ -14,6 +14,7 @@ import { VisitasAgendaEjecucion } from './visitas-agenda-ejecucion/visitas-agend
 import { VisitasAgendaDetalle } from './visitas-agenda-detalle/visitas-agenda-detalle';
 import { Dashboard } from './dashboard/dashboard';
 import { TecnicosNuevo } from './tecnicos-nuevo/tecnicos-nuevo';
+import { TecnicosLista } from './tecnicos-lista/tecnicos-lista';
 
 export const routes: Routes = [
   // Dashboard
@@ -21,6 +22,9 @@ export const routes: Routes = [
 
   // Cuando la URL sea /clientes, muestra el componente
   { path: 'clientes', component: Clientes, canActivate: [authGuard] },
+
+  // Ruta para ver todos los tecnicos
+  { path: 'tecnicos', component: TecnicosLista, canActivate: [authGuard] },
 
   // Ruta para crear un nuevo cliente
   { path: 'clientes/nuevo', component: NuevoCliente, canActivate: [authGuard] },
