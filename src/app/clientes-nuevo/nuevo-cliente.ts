@@ -31,6 +31,7 @@ export class NuevoCliente implements OnInit {
       nombre: ['', Validators.required],
       direccion: ['', Validators.required],
       comuna: ['', Validators.required],
+      telefono: [''],
       correo: [''],
       tecnicoExternoId: [null]
     });

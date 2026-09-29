@@ -32,6 +32,7 @@ export class EditarCliente implements OnInit {
       nombre: ['', Validators.required],
       direccion: ['', Validators.required],
       comuna: ['', Validators.required],
+      telefono: [''],
       correo: [''],
       activo: [true],
       tecnicoExternoId: [null]
@@ -50,6 +51,7 @@ export class EditarCliente implements OnInit {
           nombre: datos.nombre,
           direccion: datos.direccion,
           comuna: datos.comuna,
+          telefono: datos.telefono,
           correo: datos.correo,
           activo: datos.activo,
           tecnicoExternoId: datos.tecnicoExternoId

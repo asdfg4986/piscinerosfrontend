@@ -41,6 +41,7 @@
         <th>Nombre</th>
         <th>Dirección</th>
         <th>Comuna</th>
+        <th>Teléfono</th>
         <th *ngIf="esAdmin">Técnico Externo</th>
         <th>Estado</th>
         <th style="width: 1%; white-space: nowrap;">Acciones</th>
@@ -53,6 +54,7 @@
           <td>{{ cliente.nombre }}</td>
           <td>{{ cliente.direccion }}</td>
           <td>{{ cliente.comuna }}</td>
+          <td>{{ cliente.telefono || '-' }}</td>
           <td *ngIf="esAdmin">
             <span class="badge bg-secondary" *ngIf="!cliente.nombreTecnicoExterno">Interno</span>
             <span class="badge bg-info text-dark" *ngIf="cliente.nombreTecnicoExterno">{{ cliente.nombreTecnicoExterno }}</span>
@@ -76,7 +78,7 @@
         </tr>
       } @empty {
         <tr>
-          <td colspan="7" class="text-center text-muted">Cargando clientes o sin datos...</td>
+          <td colspan="8" class="text-center text-muted">Cargando clientes o sin datos...</td>
         </tr>
       }
     </tbody>
