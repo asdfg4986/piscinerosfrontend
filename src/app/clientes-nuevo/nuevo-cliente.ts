@@ -6,10 +6,12 @@ import { ConfiguracionService } from '../services/configuracion';
 import { TecnicoService } from '../services/tecnico';
 import Swal from 'sweetalert2';
 
+import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-nuevo-cliente',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './nuevo-cliente.html',
   styleUrl: './nuevo-cliente.scss'
 })
@@ -32,7 +34,7 @@ export class NuevoCliente implements OnInit {
       numeroClienteLegacy: [''],
       direccion: ['', Validators.required],
       comuna: ['', Validators.required],
-      telefono: [''],
+      telefono: ['', [Validators.pattern('^\\+569\\d{8}$')]],
       correo: [''],
       tecnicoExternoId: [null]
     });

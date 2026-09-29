@@ -24,7 +24,11 @@
 
       <div class="mb-3">
         <label class="form-label">Teléfono (Opcional)</label>
-        <input type="text" class="form-control" formControlName="telefono" placeholder="Ej. +56 9 1234 5678">
+        <input type="text" class="form-control" formControlName="telefono" placeholder="Ej. +56912345678"
+               [ngClass]="{'is-invalid': formulario.get('telefono')?.invalid && (formulario.get('telefono')?.dirty || formulario.get('telefono')?.touched)}">
+        <div class="invalid-feedback" *ngIf="formulario.get('telefono')?.errors?.['pattern']">
+          El formato debe ser +569XXXXXXXX (Ej. +56912345678).
+        </div>
       </div>
 
       <div class="mb-3">
