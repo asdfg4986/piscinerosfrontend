@@ -14,6 +14,11 @@ export class TecnicoService {
     return this.http.get(this.apiUrl);
   }
 
+  // Obtener un técnico por ID
+  getTecnico(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${id}`);
+  }
+
   // Crear un nuevo técnico (y su cuenta de usuario)
   crearTecnico(tecnico: any): Observable<any> {
     return this.http.post(this.apiUrl, tecnico);
