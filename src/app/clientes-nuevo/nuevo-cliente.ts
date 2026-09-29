@@ -29,6 +29,7 @@ export class NuevoCliente implements OnInit {
     // Configuramos los campos y validaciones
     this.formulario = this.fb.group({
       nombre: ['', Validators.required],
+      numeroClienteLegacy: [''],
       direccion: ['', Validators.required],
       comuna: ['', Validators.required],
       telefono: [''],
@@ -80,8 +81,11 @@ export class NuevoCliente implements OnInit {
         },
         error: (err) => {
           console.error('Error al guardar:', err);
-          // Alerta de error
-          Swal.fire('Error', 'Hubo un problema al guardar el cliente', 'error');
+          if (err.status === 400 && err.error?.mensaje) {
+            Swal.fire('Error', err.error.mensaje, 'error');
+          } else {
+            Swal.fire('Error', 'Hubo un problema al guardar el cliente', 'error');
+          }
         }
       });
     }

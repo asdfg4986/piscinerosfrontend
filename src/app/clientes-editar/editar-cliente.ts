@@ -30,6 +30,7 @@ export class EditarCliente implements OnInit {
   ) {
     this.formulario = this.fb.group({
       nombre: ['', Validators.required],
+      numeroClienteLegacy: [''],
       direccion: ['', Validators.required],
       comuna: ['', Validators.required],
       telefono: [''],
@@ -49,6 +50,7 @@ export class EditarCliente implements OnInit {
         // Llenar el formulario con los datos que llegaron
         this.formulario.patchValue({
           nombre: datos.nombre,
+          numeroClienteLegacy: datos.numeroClienteLegacy,
           direccion: datos.direccion,
           comuna: datos.comuna,
           telefono: datos.telefono,
@@ -106,7 +108,11 @@ export class EditarCliente implements OnInit {
         },
         error: (err) => {
           console.error('Error al actualizar:', err);
-          Swal.fire('Error', 'No se pudo actualizar el cliente', 'error');
+          if (err.status === 400 && err.error?.mensaje) {
+            Swal.fire('Error', err.error.mensaje, 'error');
+          } else {
+            Swal.fire('Error', 'No se pudo actualizar el cliente', 'error');
+          }
         }
       });
     }
