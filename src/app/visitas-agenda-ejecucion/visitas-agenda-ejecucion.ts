@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VisitaService } from '../services/visita';
 import imageCompression from 'browser-image-compression';
+import SignaturePad from 'signature_pad';
 import Swal from 'sweetalert2';
 import { DatePipe, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -40,6 +41,13 @@ export class VisitasAgendaEjecucion implements OnInit {
   fotoPreview: string | ArrayBuffer | null = null;
   archivoComprimido: File | null = null;
   procesando = false;
+
+  // Variables para la firma
+  @ViewChild('canvasFirma') canvasFirma!: ElementRef<HTMLCanvasElement>;
+  signaturePad!: SignaturePad;
+  mostrarModalFirma = false;
+  archivoFirma: File | null = null;
+  firmaPreview: string | null = null;
 
   ngOnInit() {
     this.visitaId = Number(this.route.snapshot.paramMap.get('id'));
@@ -100,6 +108,64 @@ export class VisitasAgendaEjecucion implements OnInit {
     }
   }
 
+  abrirModalFirma() {
+    this.mostrarModalFirma = true;
+    setTimeout(() => {
+        this.initSignaturePad();
+    }, 100);
+  }
+
+  cerrarModalFirma() {
+    this.mostrarModalFirma = false;
+    this.cdr.detectChanges();
+  }
+
+  initSignaturePad() {
+    if (this.canvasFirma && this.canvasFirma.nativeElement) {
+      const canvas = this.canvasFirma.nativeElement;
+      // Ajuste para pantallas retina (DPI)
+      const ratio =  Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d")?.scale(ratio, ratio);
+      
+      this.signaturePad = new SignaturePad(canvas, {
+        backgroundColor: 'rgb(255, 255, 255)'
+      });
+    }
+  }
+
+  limpiarFirma() {
+    if (this.signaturePad) {
+      this.signaturePad.clear();
+    }
+  }
+
+  async guardarFirma() {
+    if (this.signaturePad && !this.signaturePad.isEmpty()) {
+      const dataURL = this.signaturePad.toDataURL('image/png');
+      this.firmaPreview = dataURL;
+      
+      try {
+        // Convertir dataURL a File
+        const res = await fetch(dataURL);
+        const blob = await res.blob();
+        this.archivoFirma = new File([blob], `firma_${this.visitaId}.png`, { type: 'image/png' });
+        this.cerrarModalFirma();
+        this.cdr.detectChanges(); // Forzar la actualización de la UI para cerrar el modal de inmediato
+      } catch (error) {
+        console.error("Error convirtiendo la firma:", error);
+      }
+    } else {
+      Swal.fire('Atención', 'El lienzo está vacío. Dibuja una firma o cancela.', 'warning');
+    }
+  }
+
+  eliminarFirma() {
+      this.archivoFirma = null;
+      this.firmaPreview = null;
+  }
+
   finalizarTrabajo() {
     if (!this.archivoComprimido) {
       Swal.fire('Atención', 'Debes tomar una foto de evidencia para finalizar.', 'warning');
@@ -108,42 +174,62 @@ export class VisitasAgendaEjecucion implements OnInit {
 
     this.procesando = true;
 
-    // 1. Subimos la foto al endpoint que hicimos en C# (y que C# envía a Azure)
+    // 1. Subimos la foto al endpoint
     this.visitaService.subirFotoVisita(this.visitaId, this.archivoComprimido).subscribe({
       next: (response) => {
-        // 2. Si la foto subió bien, cambiamos el estado de la visita a Completada (2)
-        // Y muy importante: quitamos los objetos cliente/tecnico para que el backend (Entity Framework) no se confunda
-        // y asignamos la URL de la foto que recién nos respondió Azure.
-        const { cliente, tecnico, ...visitaLimpia } = this.visitaActual;
-        const visitaActualizada = { 
-          ...visitaLimpia, 
-          estado: 2,
-          fotoUrl: response.url,
-          observaciones: this.observacionesFinales, // Aquí enviamos las observaciones nuevas (o vacío)
-          cloro: this.tareas.cloro,
-          ph: this.tareas.ph,
-          retrolavado: this.tareas.retrolavado,
-          canastillos: this.tareas.canastillos,
-          aspirado: this.tareas.aspirado,
-          cepillado: this.tareas.cepillado,
-          llaves: this.tareas.llaves,
-          llenando: this.tareas.llenando
-        };
+        const fotoUrl = response.url;
         
-        this.visitaService.actualizarVisita(this.visitaId, visitaActualizada).subscribe({
-          next: () => {
-            this.procesando = false;
-            Swal.fire('¡Excelente!', 'Trabajo finalizado y evidencia guardada.', 'success')
-              .then(() => this.volver());
-          },
-          error: (err) => {
-             console.error("Error al actualizar la visita:", err);
-             this.manejarError();
-          }
-        });
+        // 2. Si hay firma, subirla
+        if (this.archivoFirma) {
+            this.visitaService.subirFirmaVisita(this.visitaId, this.archivoFirma).subscribe({
+                next: (firmaRes) => {
+                    this.actualizarVisitaFinal(fotoUrl, firmaRes.url);
+                },
+                error: (err) => {
+                    console.error("Error al subir firma:", err);
+                    this.manejarError();
+                }
+            });
+        } else {
+            this.actualizarVisitaFinal(fotoUrl, null);
+        }
       },
       error: (err) => {
          console.error("Error al subir foto:", err);
+         this.manejarError();
+      }
+    });
+  }
+
+  actualizarVisitaFinal(fotoUrl: string, firmaUrl: string | null) {
+    const { cliente, tecnico, ...visitaLimpia } = this.visitaActual;
+    const visitaActualizada: any = { 
+      ...visitaLimpia, 
+      estado: 2,
+      fotoUrl: fotoUrl,
+      observaciones: this.observacionesFinales,
+      cloro: this.tareas.cloro,
+      ph: this.tareas.ph,
+      retrolavado: this.tareas.retrolavado,
+      canastillos: this.tareas.canastillos,
+      aspirado: this.tareas.aspirado,
+      cepillado: this.tareas.cepillado,
+      llaves: this.tareas.llaves,
+      llenando: this.tareas.llenando
+    };
+    
+    if (firmaUrl) {
+      visitaActualizada.firmaClienteUrl = firmaUrl;
+    }
+    
+    this.visitaService.actualizarVisita(this.visitaId, visitaActualizada).subscribe({
+      next: () => {
+        this.procesando = false;
+        Swal.fire('¡Excelente!', 'Trabajo finalizado y evidencia guardada.', 'success')
+          .then(() => this.volver());
+      },
+      error: (err) => {
+         console.error("Error al actualizar la visita:", err);
          this.manejarError();
       }
     });

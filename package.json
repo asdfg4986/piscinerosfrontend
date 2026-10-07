@@ -19,6 +19,7 @@
     "@angular/router": "^22.2.0",
     "browser-image-compression": "^2.0.2",
     "rxjs": "~7.8.0",
+    "signature_pad": "^5.1.4",
     "sweetalert2": "^11.26.25",
     "tslib": "^2.3.0"
   },

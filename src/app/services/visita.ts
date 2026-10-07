@@ -47,6 +47,14 @@ export class VisitaService {
     return this.http.post(`${this.apiUrl}/${visitaId}/foto`, formData);
   }
 
+  // Subir la firma de un cliente para una visita específica
+  subirFirmaVisita(visitaId: number, firma: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('firma', firma);
+
+    return this.http.post(`${this.apiUrl}/${visitaId}/firma`, formData);
+  }
+
   // Endpoint: api/Visitas/tecnico/{id}/fecha/{fecha}
   getVisitasPorFecha(tecnicoId: number, fecha: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/tecnico/${tecnicoId}/fecha/${fecha}`);
