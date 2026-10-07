@@ -65,8 +65,16 @@ export class Dashboard implements OnInit {
 
     // Visitas
     if (this.esAdmin) {
-      this.visitaService.getVisitas().subscribe({
-        next: (visitas) => this.procesarVisitas(visitas),
+      // Calculamos la fecha actual en YYYY-MM-DD
+      const hoy = new Date();
+      const year = hoy.getFullYear();
+      const month = String(hoy.getMonth() + 1).padStart(2, '0');
+      const day = String(hoy.getDate()).padStart(2, '0');
+      const fechaHoy = `${year}-${month}-${day}`;
+
+      // Pedimos las visitas de hoy, hasta 100 para el dashboard
+      this.visitaService.getVisitas(1, 100, fechaHoy, fechaHoy).subscribe({
+        next: (response) => this.procesarVisitas(response.items || []),
         error: (err) => console.error('Error cargando todas las visitas', err)
       });
     } else {
@@ -100,16 +108,8 @@ export class Dashboard implements OnInit {
   procesarVisitas(visitas: any[]) {
     if (!visitas) return;
 
-    const hoy = new Date();
-    const inicioHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-    const finHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
-
-    // Si es técnico, 'getVisitasPorFecha' ya nos trae solo las de hoy, pero si es admin, vienen TODAS.
-    // Igual filtramos por seguridad.
-    this.agendaHoy = visitas.filter((v: any) => {
-      const fechaVisita = new Date(v.fechaVisita);
-      return fechaVisita >= inicioHoy && fechaVisita <= finHoy;
-    });
+    // Ya vienen filtradas por hoy desde el backend, así que agendaHoy es directamente visitas.
+    this.agendaHoy = visitas;
 
     this.visitasHoy = this.agendaHoy.length;
     this.visitasPendientes = this.agendaHoy.filter((v: any) => v.estado === 0 || v.estado === 1).length;

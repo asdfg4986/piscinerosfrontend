@@ -46,21 +46,16 @@ export class VisitasAgendaTecnico implements OnInit {
   cargarVisitas() {
     this.cargando = true;
     
-    // Si es administrador, cargamos todas las visitas y las filtramos localmente por fecha
+    // Si es administrador, cargamos las visitas filtradas por fecha desde el backend
     if (this.esAdmin) {
-      this.visitaService.getVisitas().subscribe({
-        next: (data) => {
-          // Filtrar las visitas por la fecha seleccionada
-          this.visitas = data.filter((v: any) => {
-            const fechaObj = new Date(v.fechaVisita);
-            const fechaStr = this.obtenerFechaIso(fechaObj);
-            return fechaStr === this.fechaSeleccionada;
-          });
+      this.visitaService.getVisitas(1, 100, this.fechaSeleccionada, this.fechaSeleccionada).subscribe({
+        next: (response) => {
+          this.visitas = response.items || [];
           
           // Ordenar por hora
           this.visitas.sort((a, b) => new Date(a.fechaVisita).getTime() - new Date(b.fechaVisita).getTime());
 
-          console.log('Todas las visitas (Admin):', this.visitas);
+          console.log('Visitas del día (Admin):', this.visitas);
           this.cargando = false;
           this.cdr.detectChanges();
         },
