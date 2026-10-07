@@ -72,6 +72,14 @@
           <small>No hay foto registrada para esta visita.</small>
         </div>
       }
+
+      @if (visitaActual.firmaClienteUrl) {
+        <hr class="my-4">
+        <h5 class="mb-3">Firma del Cliente</h5>
+        <div>
+          <img [src]="visitaActual.firmaClienteUrl" class="img-fluid rounded border shadow-sm bg-white" alt="Firma del Cliente" style="max-height: 150px;">
+        </div>
+      }
     </div>
   }
 </div>

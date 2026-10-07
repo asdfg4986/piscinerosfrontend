@@ -17,6 +17,7 @@ export class VisitasEditar implements OnInit {
   clienteId!: number;
   visitaId!: number;
   tecnicos: any[] = [];
+  visita: any = null;
   
   // Creamos un arreglo con los estados exactos de tu Enum de C#
   estados = [
@@ -63,6 +64,7 @@ export class VisitasEditar implements OnInit {
   cargarVisitaActual() {
     this.visitaService.getVisita(this.visitaId).subscribe({
       next: (datos) => {
+        this.visita = datos; // Guardar para visualizar fotos/firmas
         // Llenamos el formulario con los datos que llegaron
         this.formulario.patchValue({
           tecnicoId: datos.tecnicoId,

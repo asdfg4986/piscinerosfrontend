@@ -9,9 +9,12 @@ export class VisitaService {
 
   constructor(private http: HttpClient) { }
 
-  // Obtener todas las visitas
-  getVisitas(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  // Obtener todas las visitas con paginación
+  getVisitas(page: number = 1, pageSize: number = 10, fechaInicio?: string, fechaFin?: string): Observable<any> {
+    let query = `${this.apiUrl}?page=${page}&pageSize=${pageSize}`;
+    if (fechaInicio) query += `&fechaInicio=${fechaInicio}`;
+    if (fechaFin) query += `&fechaFin=${fechaFin}`;
+    return this.http.get(query);
   }
 
   // Obtener visitas de un cliente específico
@@ -45,6 +48,14 @@ export class VisitaService {
     formData.append('foto', foto);
 
     return this.http.post(`${this.apiUrl}/${visitaId}/foto`, formData);
+  }
+
+  // Subir la firma de un cliente para una visita específica
+  subirFirmaVisita(visitaId: number, firma: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('firma', firma);
+
+    return this.http.post(`${this.apiUrl}/${visitaId}/firma`, formData);
   }
 
   // Endpoint: api/Visitas/tecnico/{id}/fecha/{fecha}
