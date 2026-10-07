@@ -7,7 +7,7 @@
       </button>
       <h3>Historial de Mantenimientos</h3>
     </div>
-    <button class="btn btn-info text-white" (click)="irANuevaVisita()">+ Registrar Visita</button>
+    <button *ngIf="esAdmin" class="btn btn-info text-white" (click)="irANuevaVisita()">+ Registrar Visita</button>
   </div>
   
   <!-- Filtros -->
