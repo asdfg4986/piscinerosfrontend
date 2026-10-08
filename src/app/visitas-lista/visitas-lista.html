@@ -43,48 +43,50 @@
     </div>
   </div>
 
-  <table class="table table-bordered table-hover mt-3">
-    <thead class="table-info">
-      <tr>
-        <th>Id</th>
-        <th>Fecha y Hora</th>
-        <th>Técnico</th>
-        <th>Estado</th>
-        <th>Observaciones</th>
-        <th style="width: 1%; white-space: nowrap;">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (visita of visitasPaginadas; track visita.id) {
+  <div class="table-responsive mt-3">
+    <table class="table table-bordered table-hover mb-0">
+      <thead class="table-info">
         <tr>
-          <!-- Usamos el pipe 'date' nativo de Angular para formatear la fecha -->
-          <td>{{ visita.id }}</td>
-          <td>{{ visita.fechaVisita | date:'dd/MM/yyyy HH:mm' }}</td>
-          <td>{{ visita.tecnico?.nombre }}</td>
-          <td>
-            <span class="badge {{ getEstadoInfo(visita.estado).clase }}">
-              {{ getEstadoInfo(visita.estado).texto }}
-            </span>
-          </td>
-          <td>{{ visita.observaciones }}</td>
-          <td style="white-space: nowrap;">
-            <button *ngIf="esAdmin" class="btn btn-sm btn-warning me-2" (click)="editarVisita(visita.id)">
-              Actualizar
-            </button>
-            <button *ngIf="esAdmin" class="btn btn-sm btn-danger" (click)="eliminarVisita(visita.id)">
-              Eliminar
-            </button>
-          </td>
+          <th>Id</th>
+          <th>Fecha y Hora</th>
+          <th>Técnico</th>
+          <th>Estado</th>
+          <th>Observaciones</th>
+          <th style="width: 1%; white-space: nowrap;">Acciones</th>
         </tr>
-      } @empty {
-        <tr>
-          <td colspan="6" class="text-center text-muted p-4">
-            No hay registros de mantenimiento para este cliente.
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @for (visita of visitasPaginadas; track visita.id) {
+          <tr>
+            <!-- Usamos el pipe 'date' nativo de Angular para formatear la fecha -->
+            <td>{{ visita.id }}</td>
+            <td>{{ visita.fechaVisita | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ visita.tecnico?.nombre }}</td>
+            <td>
+              <span class="badge {{ getEstadoInfo(visita.estado).clase }}">
+                {{ getEstadoInfo(visita.estado).texto }}
+              </span>
+            </td>
+            <td>{{ visita.observaciones }}</td>
+            <td style="white-space: nowrap;">
+              <button *ngIf="esAdmin" class="btn btn-sm btn-warning me-2" (click)="editarVisita(visita.id)">
+                Actualizar
+              </button>
+              <button *ngIf="esAdmin" class="btn btn-sm btn-danger" (click)="eliminarVisita(visita.id)">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="text-center text-muted p-4">
+              No hay registros de mantenimiento para este cliente.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 
   <!-- Paginación -->
   <nav aria-label="Navegación de páginas de visitas" *ngIf="totalPaginas > 1">

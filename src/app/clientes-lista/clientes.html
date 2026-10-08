@@ -34,57 +34,59 @@
     </div>
   </div>
 
-  <table class="table table-striped table-hover">
-    <thead class="table-dark">
-      <tr>
-        <th>ID Heredado</th>
-        <th>Nombre</th>
-        <th>Dirección</th>
-        <th>Comuna</th>
-        <th>Teléfono</th>
-        <th *ngIf="esAdmin">Técnico Externo</th>
-        <th>Estado</th>
-        <th style="width: 1%; white-space: nowrap;">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (cliente of clientesPaginados; track cliente.id) {
+  <div class="table-responsive">
+    <table class="table table-striped table-hover mb-0">
+      <thead class="table-dark">
         <tr>
-          <td>
-            <span class="fw-bold">{{ cliente.numeroClienteLegacy || 'N/A' }}</span>
-          </td>
-          <td>{{ cliente.nombre }}</td>
-          <td>{{ cliente.direccion }}</td>
-          <td>{{ cliente.comuna }}</td>
-          <td>{{ cliente.telefono || '-' }}</td>
-          <td *ngIf="esAdmin">
-            <span class="badge bg-secondary" *ngIf="!cliente.nombreTecnicoExterno">Interno</span>
-            <span class="badge bg-info text-dark" *ngIf="cliente.nombreTecnicoExterno">{{ cliente.nombreTecnicoExterno }}</span>
-          </td>
-          <td>
-            <span class="badge" [ngClass]="cliente.activo ? 'bg-success' : 'bg-danger'">
-              {{ cliente.activo ? 'Activo' : 'Inactivo' }}
-            </span>
-          </td>
-          <td style="white-space: nowrap;">
-            <button class="btn btn-sm btn-info me-2" (click)="verVisitas(cliente.id)">
-              Visitas
-            </button>
-            <button *ngIf="esAdmin" class="btn btn-sm btn-warning me-2" (click)="editar(cliente.id)">
-              Editar
-            </button>
-            <button *ngIf="esAdmin" class="btn btn-sm btn-danger" (click)="eliminar(cliente.id, cliente.nombre)">
-              Eliminar
-            </button>
-          </td>
+          <th>ID Heredado</th>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>Comuna</th>
+          <th>Teléfono</th>
+          <th *ngIf="esAdmin">Técnico Externo</th>
+          <th>Estado</th>
+          <th style="width: 1%; white-space: nowrap;">Acciones</th>
         </tr>
-      } @empty {
-        <tr>
-          <td colspan="8" class="text-center text-muted">Cargando clientes o sin datos...</td>
-        </tr>
-      }
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        @for (cliente of clientesPaginados; track cliente.id) {
+          <tr>
+            <td>
+              <span class="fw-bold">{{ cliente.numeroClienteLegacy || 'N/A' }}</span>
+            </td>
+            <td>{{ cliente.nombre }}</td>
+            <td>{{ cliente.direccion }}</td>
+            <td>{{ cliente.comuna }}</td>
+            <td>{{ cliente.telefono || '-' }}</td>
+            <td *ngIf="esAdmin">
+              <span class="badge bg-secondary" *ngIf="!cliente.nombreTecnicoExterno">Interno</span>
+              <span class="badge bg-info text-dark" *ngIf="cliente.nombreTecnicoExterno">{{ cliente.nombreTecnicoExterno }}</span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="cliente.activo ? 'bg-success' : 'bg-danger'">
+                {{ cliente.activo ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td style="white-space: nowrap;">
+              <button class="btn btn-sm btn-info me-2" (click)="verVisitas(cliente.id)">
+                Visitas
+              </button>
+              <button *ngIf="esAdmin" class="btn btn-sm btn-warning me-2" (click)="editar(cliente.id)">
+                Editar
+              </button>
+              <button *ngIf="esAdmin" class="btn btn-sm btn-danger" (click)="eliminar(cliente.id, cliente.nombre)">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" class="text-center text-muted">Cargando clientes o sin datos...</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 
   <!-- Paginación -->
   <nav aria-label="Navegación de páginas de clientes" *ngIf="totalPaginas > 1">
