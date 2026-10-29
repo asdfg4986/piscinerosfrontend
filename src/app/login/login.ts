@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 export class LoginComponent {
   formulario: FormGroup;
   cargando = false;
+  private cdr = inject(ChangeDetectorRef);
 
   constructor(
     private fb: FormBuilder,
@@ -49,7 +50,17 @@ export class LoginComponent {
       },
       error: (err) => {
         this.cargando = false;
+        this.cdr.detectChanges();
         console.error('Error en login:', err);
+        if (err.status === 429) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Demasiados Intentos',
+            text: err.error?.mensaje || 'Has superado el límite de intentos permitidos. Por favor, espera un minuto antes de volver a intentar.'
+          });
+          return;
+        }
+
         Swal.fire({
           icon: 'error',
           title: 'Acceso Denegado',

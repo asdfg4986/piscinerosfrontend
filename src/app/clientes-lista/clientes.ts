@@ -78,7 +78,36 @@ export class Clientes implements OnInit {
   }
 
   get paginas() {
-    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+    return this.paginasVisibles;
+  }
+
+  get paginasVisibles(): number[] {
+    const total = this.totalPaginas;
+    const actual = this.paginaActual;
+    const max = 5;
+
+    if (total <= max) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    let inicio = actual - 2;
+    let fin = actual + 2;
+
+    if (inicio < 1) {
+      inicio = 1;
+      fin = max;
+    }
+
+    if (fin > total) {
+      fin = total;
+      inicio = total - max + 1;
+    }
+
+    const paginas: number[] = [];
+    for (let i = inicio; i <= fin; i++) {
+      paginas.push(i);
+    }
+    return paginas;
   }
 
   constructor(
